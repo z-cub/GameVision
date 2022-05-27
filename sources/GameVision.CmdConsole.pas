@@ -375,7 +375,7 @@ begin
       if FPos.Y >= FSize.Y then
       begin
         FPos.Y := FSize.Y;
-        //if not FActive then GV.EmitCmdConActiveEvent;
+        if not FActive then GV.EmitCmdConActiveEvent;
         FActive := True;
       end;
     end
@@ -387,7 +387,7 @@ begin
     begin
       FState := ccsInactive;
       FActive := False;
-      //GV.EmitCmdConInactiveEvent;
+      GV.EmitCmdConInactiveEvent;
       Exit;
     end;
   end;

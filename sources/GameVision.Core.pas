@@ -81,6 +81,11 @@ uses
   GameVision.CustomGame,
   GameVision.Game;
 
+const
+  // Custom events
+  EVENT_CMDCON_ACTIVE   = 10000;
+  EVENT_CMDCON_INACTIVE = 10001;
+
 type
   { TGV }
   TGV = class(TGVObject)
@@ -91,6 +96,9 @@ type
     FVoice: PALLEGRO_VOICE;
     FMixer: PALLEGRO_MIXER;
     FFileState: array[False..True] of ALLEGRO_STATE;
+    FUserEventSrc: ALLEGRO_EVENT_SOURCE;
+    FCmdConActive: ALLEGRO_EVENT;
+    FCmdConInactive: ALLEGRO_EVENT;
     FMasterObjectList: TGVObjectList;
     FUtil: TGVUtil;
     FMath: TGVMath;
@@ -141,6 +149,8 @@ type
     property Game: TGVGame read FGame write FGame;
     constructor Create; override;
     destructor Destroy; override;
+    procedure EmitCmdConInactiveEvent;
+    procedure EmitCmdConActiveEvent;
     procedure SetFileSandBoxed(aEnable: Boolean);
     function  GetFileSandBoxed: Boolean;
     procedure SetFileSandboxWriteDir(aPath: string);
@@ -187,6 +197,9 @@ begin
   al_init_ttf_addon;
   al_init_video_addon;
 
+  // int user event source
+  al_init_user_event_source(@FUserEventSrc);
+
   // init event queues
   FQueue := al_create_event_queue;
   al_register_event_source(FQueue, al_get_joystick_event_source);
@@ -194,6 +207,10 @@ begin
   al_register_event_source(FQueue, al_get_mouse_event_source);
   al_register_event_source(FQueue, al_get_touch_input_event_source);
   al_register_event_source(FQueue, al_get_touch_input_mouse_emulation_event_source);
+  al_register_event_source(Queue , @FUserEventSrc);
+
+  FCmdConActive.type_ := EVENT_CMDCON_ACTIVE;
+  FCmdConInactive.type_ := EVENT_CMDCON_INACTIVE;
 
   // init audio
   if al_is_audio_installed then
@@ -314,6 +331,16 @@ begin
   ShutdownAllegro;
   GV := nil;
   inherited;
+end;
+
+procedure TGV.EmitCmdConInactiveEvent;
+begin
+  al_emit_user_event(@FUserEventSrc , @FCmdConInactive , nil);
+end;
+
+procedure TGV.EmitCmdConActiveEvent;
+begin
+  al_emit_user_event(@FUserEventSrc , @FCmdConActive , nil);
 end;
 
 procedure TGV.SetFileSandBoxed(aEnable: Boolean);

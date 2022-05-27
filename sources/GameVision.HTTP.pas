@@ -58,6 +58,7 @@ interface
 
 uses
   System.SysUtils,
+  System.Classes,
   System.Net.HttpClient,
   System.Net.URLClient,
   System.Net.Mime,
@@ -65,7 +66,7 @@ uses
 
 type
   { TGVHttpOperation }
-  TGVHttpOperation = (hoGet);
+  TGVHttpOperation = (hoGet, hoPost);
 
   { TGVHttpEvent }
   TGVHttpOperationEvent = procedure(aOperation: TGVHttpOperation; const aResult: string) of object;
@@ -74,23 +75,30 @@ type
   TGVHttp = class(TGVObject)
   protected
     FHttpClient: THTTPClient;
+    FFormData: TMultipartFormData;
     FOnOperation: TGVHttpOperationEvent;
     FBusy: Boolean;
     function DoGet(const aURL: string): string;
+    function DoPost(const aURL: string; aSource: TStream=nil): string;
     procedure DoOperationEvent(aOperation: TGVHttpOperation; const aResult: string);
   public
     property Busy: Boolean read FBusy;
+    property FormData: TMultipartFormData read FFormData;
     property OnOperation: TGVHttpOperationEvent read FOnOperation write FOnOperation;
     constructor Create; override;
     destructor Destroy; override;
     procedure ClearCustomHeaders;
     procedure SetCustomHeader(const aKey: string; const aValue: string);
+    procedure ClearFormData;
+    procedure SetContentType(const aType: string);
     procedure Get(const aURL: string);
+    procedure Post(const aURL: string; aSource: TStream=nil);
   end;
 
 implementation
 
 uses
+  System.NetConsts,
   GameVision.Core;
 
 { TGVHttp }
@@ -98,6 +106,19 @@ function TGVHttp.DoGet(const aURL: string): string;
 begin
   try
     Result := FHttpClient.Get(aURL).ContentAsString;
+  except
+    on E: Exception do
+      Result := E.Message;
+  end;
+end;
+
+function TGVHttp.DoPost(const aURL: string; aSource: TStream=nil): string;
+begin
+  try
+  if aSource = nil then
+    Result := FHttpClient.Post(aURL, FFormData).ContentAsString
+  else
+    Result := FHttpClient.Post(aURL, aSource).ContentAsString;
   except
     on E: Exception do
       Result := E.Message;
@@ -114,10 +135,12 @@ constructor TGVHttp.Create;
 begin
   inherited;
   FHttpClient := THTTPClient.Create;
+  FFormData := TMultipartFormData.Create;
 end;
 
 destructor TGVHttp.Destroy;
 begin
+  FreeAndNil(FFormData);
   FreeAndNil(FHttpClient);
   inherited;
 end;
@@ -130,6 +153,17 @@ end;
 procedure TGVHttp.SetCustomHeader(const aKey: string; const aValue: string);
 begin
   FHttpClient.CustHeaders[aKey] := aValue;
+end;
+
+procedure TGVHttp.ClearFormData;
+begin
+  FreeAndNil(FFormData);
+  FFormData := TMultipartFormData.Create;
+end;
+
+procedure TGVHttp.SetContentType(const aType: string);
+begin
+  FHttpClient.ContentType := aType;
 end;
 
 procedure TGVHttp.Get(const aURL: string);
@@ -152,7 +186,28 @@ begin
       FBusy := False;
     end
   );
+end;
 
+procedure TGVHttp.Post(const aURL: string; aSource: TStream=nil);
+var
+  LResult: string;
+begin
+  if FBusy then Exit;
+  if aURL.IsEmpty then Exit;
+
+  GV.Async.Run(
+    'TGVHttp',
+    procedure
+    begin
+      FBusy := True;
+      LResult := DoPost(aURL, aSource);
+    end,
+    procedure
+    begin
+      DoOperationEvent(hoPost, LResult);
+      FBusy := False;
+    end
+  );
 end;
 
 end.

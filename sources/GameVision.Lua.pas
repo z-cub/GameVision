@@ -1089,14 +1089,14 @@ begin
   FContext := TGVLuaContext.Create(Self);
   SetVariable('GameVision.LuaVersion', GetVariable('jit.version', vtString));
   SetVariable('GameVision.Version', GV_VERSION);
-  if Assigned(GV.Game) then GV.Game.OnLuaOpen;
+  if Assigned(GV.Game) then GV.Game.OnOpenLua;
 end;
 
 procedure TGVLua.Close;
 begin
   if FState = nil then Exit;
   FreeAndNil(FContext);
-  if Assigned(GV.Game) then GV.Game.OnLuaClose;
+  if Assigned(GV.Game) then GV.Game.OnCloseLua;
   lua_close(FState);
   FState := nil;
 end;

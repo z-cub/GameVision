@@ -190,8 +190,10 @@ type
     procedure OnHighscoreAction(aHighscores: TGVHighscores; aAction: TGVHighscoreAction); virtual;
     procedure OnPreLuaReset; virtual;
     procedure OnPostLuaReset; virtual;
-    procedure OnLuaOpen; virtual;
-    procedure OnLuaClose; virtual;
+    procedure OnOpenLua; virtual;
+    procedure OnCloseLua; virtual;
+    procedure OnOpenCmdConsole; virtual;
+    procedure OnCloseCmdConsole; virtual;
     function  GetTime: Double;
     procedure ResetTiming(aSpeed: Single=0; aFixedSpeed: Single=0);
     procedure SetUpdateSpeed(aSpeed: Single);
@@ -210,7 +212,6 @@ type
     procedure HudTextItemPadWidth(aWidth: Integer);
     procedure HudText(aFont: TGVFont; aColor: TGVColor; aAlign: TGVHAlign; const aMsg: string; const aArgs: array of const);
     function  HudTextItem(const aKey: string; const aValue: string; const aSeperator: string='-'): string;
-
   end;
 
   { TGVGameClass }
@@ -607,12 +608,22 @@ procedure TGVGame.OnPostLuaReset;
 begin
 end;
 
-procedure TGVGame.OnLuaOpen;
+procedure TGVGame.OnOpenLua;
 begin
 end;
 
-procedure TGVGame.OnLuaClose;
+procedure TGVGame.OnCloseLua;
 begin
+end;
+
+procedure TGVGame.OnOpenCmdConsole;
+begin
+
+end;
+
+procedure TGVGame.OnCloseCmdConsole;
+begin
+
 end;
 
 function  TGVGame.GetTime: Double;
@@ -741,38 +752,6 @@ begin
   Result := Format('%s %s %s', [aKey.PadRight(FHud.TextItemPadWidth), aSeperator, aValue]);
 end;
 
-(*
-  // run game
-  procedure RunGame(aGame: TGVGame);
-
-    procedure GameLoop;
-    begin
-      aGame.OnApplySettings;
-      aGame.OnStartup;
-      aGame.OnRun;
-      aGame.OnShutdown;
-      aGame.OnUnApplySettings;
-    end;
-
-  begin
-    aGame.OnProcessCmdLine;
-    aGame.OnPreStartup;
-    aGame.OnSetSettings(aGame.FSettings);
-    aGame.OpenArchive;
-    aGame.OnLoadConfig;
-    if not aGame.OnStartupDialog then
-      GameLoop
-    else
-    while aGame.ProcessStartupDialog do
-      GameLoop;
-    aGame.OnSaveConfig;
-    aGAme.CloseArchive;
-    aGame.OnPostStartup;
-  end;
-
-*)
-
-
 procedure TGVGame.OnRun;
 var
   LCurrentTransform: ALLEGRO_TRANSFORM;
@@ -804,6 +783,34 @@ begin
         GV.GUI.HandleEvent(GV.Event^);
 
         case GV.Event.type_ of
+          EVENT_CMDCON_ACTIVE:
+          begin
+            // pause audio
+            GV.Audio.Pause(True);
+
+            // pause speech
+            GV.Speech.Pause;
+
+            // pause Video
+            GV.Video.SetPause(True);
+
+            OnOpenCmdConsole;
+          end;
+
+          EVENT_CMDCON_INACTIVE:
+          begin
+            // pause speech
+            GV.Speech.Resume;
+
+            // unpause audio
+            GV.Audio.Pause(False);
+
+            // unpause video
+            GV.Video.SetPause(False);
+
+            OnCloseCmdConsole;
+          end;
+
           ALLEGRO_EVENT_DISPLAY_CLOSE:
           begin
             FTerminated := True;
