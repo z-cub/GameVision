@@ -77,6 +77,7 @@ uses
   GameVision.Collision,
   GameVision.GUI,
   GameVision.CmdConsole,
+  GameVision.Lua,
   GameVision.CustomGame,
   GameVision.Game;
 
@@ -108,6 +109,7 @@ type
     FCollision: TGVCollision;
     FGUI: TGVGUI;
     FCmdConsole: TGVCmdConsole;
+    FLua: TGVLua;
     FGame: TGVGame;
     function GetEvent: PALLEGRO_EVENT;
     procedure StartupAllegro;
@@ -135,6 +137,7 @@ type
     property Collision: TGVCollision read FCollision;
     property GUI: TGVGUI read FGUI;
     property CmdConsole: TGVCmdConsole read FCmdConsole;
+    property Lua: TGVLua read FLua;
     property Game: TGVGame read FGame write FGame;
     constructor Create; override;
     destructor Destroy; override;
@@ -285,6 +288,7 @@ begin
   FCollision := TGVCollision.Create;
   FGUI := TGVGUI.Create;
   FCmdConsole := TGVCmdConsole.Create;
+  FLua := TGVLua.Create;
 end;
 
 destructor TGV.Destroy;
@@ -305,6 +309,7 @@ begin
   FreeAndNil(FLogger);
   FreeAndNil(FConsole);
   FreeAndNil(FMath);
+  FreeAndNil(FLua);
   FreeAndNil(FMasterObjectList);
   ShutdownAllegro;
   GV := nil;

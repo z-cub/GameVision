@@ -187,7 +187,7 @@ begin
   FDatabase.SetSQLText(cDropTableSQL);
   FDatabase.SetMacro('gameid', aGameId);
   FDatabase.Execute;
-  Clear;
+  ClearResults;
 end;
 
 procedure TGVHighscores.ClearScores(const aGameId: string);
@@ -195,7 +195,7 @@ begin
   FDatabase.SetSQLText(cClearTableSQL);
   FDatabase.SetMacro('gameid', aGameId);
   FDatabase.Execute;
-  Clear;
+  ClearResults;
 end;
 
 procedure TGVHighscores.AddScore(const aGameId: string; const aName: string; aLevel: Integer; aScore: Cardinal; aSkill: Integer; aDuration: Cardinal; const aLocation: string);
@@ -223,7 +223,7 @@ begin
 
   FDatabase.Open;
 
-  FScores.Clear;
+  ClearResults;
   while not FDatabase.Eof do
   begin
     LScore.Name := FDatabase.GetField('name');

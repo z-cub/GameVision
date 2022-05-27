@@ -188,6 +188,10 @@ type
     procedure OnAfterRenderScene(aSceneNum: Integer); virtual;
     procedure OnProcessIMGUI; virtual;
     procedure OnHighscoreAction(aHighscores: TGVHighscores; aAction: TGVHighscoreAction); virtual;
+    procedure OnPreLuaReset; virtual;
+    procedure OnPostLuaReset; virtual;
+    procedure OnLuaOpen; virtual;
+    procedure OnLuaClose; virtual;
     function  GetTime: Double;
     procedure ResetTiming(aSpeed: Single=0; aFixedSpeed: Single=0);
     procedure SetUpdateSpeed(aSpeed: Single);
@@ -595,6 +599,22 @@ procedure TGVGame.OnHighscoreAction(aHighscores: TGVHighscores; aAction: TGVHigh
 begin
 end;
 
+procedure TGVGame.OnPreLuaReset;
+begin
+end;
+
+procedure TGVGame.OnPostLuaReset;
+begin
+end;
+
+procedure TGVGame.OnLuaOpen;
+begin
+end;
+
+procedure TGVGame.OnLuaClose;
+begin
+end;
+
 function  TGVGame.GetTime: Double;
 begin
   Result := al_get_time;
@@ -776,6 +796,7 @@ begin
     repeat
       Sleep(0);
       GV.Util.ProcessMessages;
+      GV.Lua.CollectGarbage;
 
       if al_get_next_event(GV.Queue, GV.Event) then
       begin
