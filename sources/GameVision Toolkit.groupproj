@@ -1,48 +1,12 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <ProjectGuid>{BA88A7DB-C21E-43AF-BCB1-CD93DFA1E2D1}</ProjectGuid>
+        <ProjectGuid>{8AE29A10-FE38-4448-A630-9A2DA4FA3583}</ProjectGuid>
     </PropertyGroup>
     <ItemGroup>
         <Projects Include="GVArc.dproj">
             <Dependencies/>
         </Projects>
-        <Projects Include="..\examples\HelloWorld.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="..\examples\Texture.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="..\examples\TextureTiled.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="..\examples\TextureScaled.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="..\examples\TextureRegion.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="..\examples\Screenshot.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="..\examples\Screenshake.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="..\examples\Entity.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="..\examples\EntityPolyPointCollision.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="..\demos\AstroBlaster.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="..\examples\AudioPositional.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="..\demos\RenderTargets.dproj">
-            <Dependencies/>
-        </Projects>
-        <Projects Include="..\examples\GUI.dproj">
+        <Projects Include="..\examples\GVExamples.dproj">
             <Dependencies/>
         </Projects>
     </ItemGroup>
@@ -62,131 +26,23 @@
     <Target Name="GVArc:Make">
         <MSBuild Projects="GVArc.dproj" Targets="Make"/>
     </Target>
-    <Target Name="HelloWorld">
-        <MSBuild Projects="..\examples\HelloWorld.dproj"/>
+    <Target Name="GVExamples">
+        <MSBuild Projects="..\examples\GVExamples.dproj"/>
     </Target>
-    <Target Name="HelloWorld:Clean">
-        <MSBuild Projects="..\examples\HelloWorld.dproj" Targets="Clean"/>
+    <Target Name="GVExamples:Clean">
+        <MSBuild Projects="..\examples\GVExamples.dproj" Targets="Clean"/>
     </Target>
-    <Target Name="HelloWorld:Make">
-        <MSBuild Projects="..\examples\HelloWorld.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="Texture">
-        <MSBuild Projects="..\examples\Texture.dproj"/>
-    </Target>
-    <Target Name="Texture:Clean">
-        <MSBuild Projects="..\examples\Texture.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="Texture:Make">
-        <MSBuild Projects="..\examples\Texture.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="TextureTiled">
-        <MSBuild Projects="..\examples\TextureTiled.dproj"/>
-    </Target>
-    <Target Name="TextureTiled:Clean">
-        <MSBuild Projects="..\examples\TextureTiled.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="TextureTiled:Make">
-        <MSBuild Projects="..\examples\TextureTiled.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="TextureScaled">
-        <MSBuild Projects="..\examples\TextureScaled.dproj"/>
-    </Target>
-    <Target Name="TextureScaled:Clean">
-        <MSBuild Projects="..\examples\TextureScaled.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="TextureScaled:Make">
-        <MSBuild Projects="..\examples\TextureScaled.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="TextureRegion">
-        <MSBuild Projects="..\examples\TextureRegion.dproj"/>
-    </Target>
-    <Target Name="TextureRegion:Clean">
-        <MSBuild Projects="..\examples\TextureRegion.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="TextureRegion:Make">
-        <MSBuild Projects="..\examples\TextureRegion.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="Screenshot">
-        <MSBuild Projects="..\examples\Screenshot.dproj"/>
-    </Target>
-    <Target Name="Screenshot:Clean">
-        <MSBuild Projects="..\examples\Screenshot.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="Screenshot:Make">
-        <MSBuild Projects="..\examples\Screenshot.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="Screenshake">
-        <MSBuild Projects="..\examples\Screenshake.dproj"/>
-    </Target>
-    <Target Name="Screenshake:Clean">
-        <MSBuild Projects="..\examples\Screenshake.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="Screenshake:Make">
-        <MSBuild Projects="..\examples\Screenshake.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="Entity">
-        <MSBuild Projects="..\examples\Entity.dproj"/>
-    </Target>
-    <Target Name="Entity:Clean">
-        <MSBuild Projects="..\examples\Entity.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="Entity:Make">
-        <MSBuild Projects="..\examples\Entity.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="EntityPolyPointCollision">
-        <MSBuild Projects="..\examples\EntityPolyPointCollision.dproj"/>
-    </Target>
-    <Target Name="EntityPolyPointCollision:Clean">
-        <MSBuild Projects="..\examples\EntityPolyPointCollision.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="EntityPolyPointCollision:Make">
-        <MSBuild Projects="..\examples\EntityPolyPointCollision.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="AstroBlaster">
-        <MSBuild Projects="..\demos\AstroBlaster.dproj"/>
-    </Target>
-    <Target Name="AstroBlaster:Clean">
-        <MSBuild Projects="..\demos\AstroBlaster.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="AstroBlaster:Make">
-        <MSBuild Projects="..\demos\AstroBlaster.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="AudioPositional">
-        <MSBuild Projects="..\examples\AudioPositional.dproj"/>
-    </Target>
-    <Target Name="AudioPositional:Clean">
-        <MSBuild Projects="..\examples\AudioPositional.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="AudioPositional:Make">
-        <MSBuild Projects="..\examples\AudioPositional.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="RenderTargets">
-        <MSBuild Projects="..\demos\RenderTargets.dproj"/>
-    </Target>
-    <Target Name="RenderTargets:Clean">
-        <MSBuild Projects="..\demos\RenderTargets.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="RenderTargets:Make">
-        <MSBuild Projects="..\demos\RenderTargets.dproj" Targets="Make"/>
-    </Target>
-    <Target Name="GUI">
-        <MSBuild Projects="..\examples\GUI.dproj"/>
-    </Target>
-    <Target Name="GUI:Clean">
-        <MSBuild Projects="..\examples\GUI.dproj" Targets="Clean"/>
-    </Target>
-    <Target Name="GUI:Make">
-        <MSBuild Projects="..\examples\GUI.dproj" Targets="Make"/>
+    <Target Name="GVExamples:Make">
+        <MSBuild Projects="..\examples\GVExamples.dproj" Targets="Make"/>
     </Target>
     <Target Name="Build">
-        <CallTarget Targets="GVArc;HelloWorld;Texture;TextureTiled;TextureScaled;TextureRegion;Screenshot;Screenshake;Entity;EntityPolyPointCollision;AstroBlaster;AudioPositional;RenderTargets;GUI"/>
+        <CallTarget Targets="GVArc;GVExamples"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="GVArc:Clean;HelloWorld:Clean;Texture:Clean;TextureTiled:Clean;TextureScaled:Clean;TextureRegion:Clean;Screenshot:Clean;Screenshake:Clean;Entity:Clean;EntityPolyPointCollision:Clean;AstroBlaster:Clean;AudioPositional:Clean;RenderTargets:Clean;GUI:Clean"/>
+        <CallTarget Targets="GVArc:Clean;GVExamples:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="GVArc:Make;HelloWorld:Make;Texture:Make;TextureTiled:Make;TextureScaled:Make;TextureRegion:Make;Screenshot:Make;Screenshake:Make;Entity:Make;EntityPolyPointCollision:Make;AstroBlaster:Make;AudioPositional:Make;RenderTargets:Make;GUI:Make"/>
+        <CallTarget Targets="GVArc:Make;GVExamples:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

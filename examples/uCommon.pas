@@ -69,64 +69,13 @@ type
   TBaseExample = class(TGVGame)
   protected
   public
-    constructor Create; override;
-    destructor Destroy; override;
-    procedure OnPreStartup; override;
-    procedure OnPostStartup; override;
-    procedure OnLoadConfig; override;
-    procedure OnSaveConfig; override;
     procedure OnSetSettings(var aSettings: TGVGameSettings); override;
-    procedure OnStartup; override;
-    procedure OnShutdown; override;
-    procedure OnReady(aReady: Boolean); override;
-    procedure OnUpdateFrame(aDeltaTime: Double); override;
-    procedure OnFixedUpdateFrame; override;
-    procedure OnStartFrame; override;
-    procedure OnEndFrame; override;
-    procedure OnClearFrame; override;
-    procedure OnRenderFrame; override;
     procedure OnRenderHUD; override;
-    procedure OnShowFrame; override;
-    procedure OnLoadVideo(const aFilename: string); override;
-    procedure OnUnloadVideo(const aFilename: string); override;
-    procedure OnStartVideo(const aFilename: string); override;
-    procedure OnFinishedVideo(const aFilename: string); override;
-    procedure OnSpeechWord(aFWord: string; aText: string); override;
   end;
 
 implementation
 
-{ TExampleTemplate }
-constructor TBaseExample.Create;
-begin
-  inherited;
-end;
-
-destructor TBaseExample.Destroy;
-begin
-  inherited;
-end;
-
-procedure TBaseExample.OnPreStartup;
-begin
-  inherited;
-end;
-
-procedure TBaseExample.OnPostStartup;
-begin
-  inherited;
-end;
-
-procedure TBaseExample.OnLoadConfig;
-begin
-  inherited;
-end;
-
-procedure TBaseExample.OnSaveConfig;
-begin
-  inherited;
-end;
-
+{ TBaseExample }
 procedure TBaseExample.OnSetSettings(var aSettings: TGVGameSettings);
 begin
   inherited;
@@ -146,85 +95,11 @@ begin
   aSettings.FontSize := 16;
 end;
 
-procedure TBaseExample.OnStartup;
-begin
-end;
-
-procedure TBaseExample.OnShutdown;
-begin
-  inherited;
-end;
-
-procedure TBaseExample.OnReady(aReady: Boolean);
-begin
-  inherited;
-end;
-
-procedure TBaseExample.OnUpdateFrame(aDeltaTime: Double);
-begin
-  inherited;
-end;
-
-procedure TBaseExample.OnFixedUpdateFrame;
-begin
-  inherited;
-end;
-
-procedure TBaseExample.OnStartFrame;
-begin
-  inherited;
-end;
-
-procedure TBaseExample.OnEndFrame;
-begin
-  inherited;
-end;
-
-procedure TBaseExample.OnClearFrame;
-begin
-  inherited;
-end;
-
-procedure TBaseExample.OnRenderFrame;
-begin
-  inherited;
-end;
-
 procedure TBaseExample.OnRenderHUD;
 begin
   HudResetPos;
   HudText(FFont, WHITE, haLeft, 'fps %d', [GetFrameRate]);
   HudText(FFont, GREEN, haLeft, HudTextItem('ESC', 'Quit'), []);
-end;
-
-procedure TBaseExample.OnShowFrame;
-begin
-  inherited;
-end;
-
-procedure TBaseExample.OnLoadVideo(const aFilename: string);
-begin
-  inherited;
-end;
-
-procedure TBaseExample.OnUnloadVideo(const aFilename: string);
-begin
-  inherited;
-end;
-
-procedure TBaseExample.OnStartVideo(const aFilename: string);
-begin
-  inherited;
-end;
-
-procedure TBaseExample.OnFinishedVideo(const aFilename: string);
-begin
-  inherited;
-end;
-
-procedure TBaseExample.OnSpeechWord(aFWord: string; aText: string);
-begin
-  inherited;
 end;
 
 end.

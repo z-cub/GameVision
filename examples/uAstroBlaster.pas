@@ -50,26 +50,6 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 ============================================================================= }
 
-(*
-  This is a game template you can use in your projects as a starting point.
-
-  1. Add GameVision.GameTemplate unit to your project
-  2. Save-as a new unit name
-  3. Place cursor on TGVGameTemplate and press Shft+Ctrl+E to rename
-  4. Update { TGVGameTemplate } throughout to your liking
-  5. Enjoy
-  --------------------------------------------------------------------------
-  In GameVision you have a these OnXXX callback methods that you can
-  override to add functionaliy to your game. The minimum methods that you
-  must override include:
-    OnSetSettings - set game settings
-    OnStartup     - run game startup code
-    OnShutdown    - run game shutdown code
-    OnUpdateFrame - run game update code
-    OnRenderFrame - run game rendering code
-    OnRenderHUD   - run game hud rendering code
-*)
-
 unit uAstroBlaster;
 
 interface
@@ -252,10 +232,8 @@ type
     WeaponSprID: TSpriteID;
     ExplosionSprID: TSpriteID;
     ParticlesSprID: TSpriteID;
-
     constructor Create; override;
     destructor Destroy; override;
-    function OnStartupDialog: Boolean; override;
     procedure OnSetSettings(var aSettings: TGVGameSettings); override;
     procedure OnStartup; override;
     procedure OnShutdown; override;
@@ -834,17 +812,6 @@ destructor TAstroBlaster.Destroy;
 begin
   Game := nil;
   inherited;
-end;
-
-function TAstroBlaster.OnStartupDialog: Boolean;
-begin
-  StartupDialog.SetCaption('GameVision - AstroBlaster Demo');
-  StartupDialog.SetLogo(Archive, 'arc/startupdialog/banner.png');
-  StartupDialog.SetLogoClickUrl('https://gamevisiontoolkit.com');
-  StartupDialog.SetReadme(Archive, 'arc/startupdialog/README.rtf');
-  StartupDialog.SetLicense(Archive, 'arc/startupdialog/LICENSE.rtf');
-  StartupDialog.SetReleaseInfo('Version '+GV_VERSION);
-  Result := True;
 end;
 
 procedure TAstroBlaster.OnSetSettings(var aSettings: TGVGameSettings);

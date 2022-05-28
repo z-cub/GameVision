@@ -75,3 +75,4 @@ examples/Win64
 bin/Screenshots
 #!/bin/GameVision.dll
 bin/*.txt
+bin/*.ini

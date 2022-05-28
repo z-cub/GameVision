@@ -50,7 +50,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 ============================================================================= }
 
-program TextureRegion;
+program GVExamples;
 
 {$APPTYPE CONSOLE}
 
@@ -59,10 +59,23 @@ program TextureRegion;
 uses
   System.SysUtils,
   GameVision.Game,
-  uTextureRegion in 'uTextureRegion.pas';
+  uGVExamples in 'uGVExamples.pas',
+  uAstroBlaster in 'uAstroBlaster.pas',
+  uRenderTargets in 'uRenderTargets.pas',
+  uCommon in 'uCommon.pas',
+  uAudioPositional in 'uAudioPositional.pas',
+  uEntity in 'uEntity.pas',
+  uEntityPolyPointCollision in 'uEntityPolyPointCollision.pas',
+  uGUI in 'uGUI.pas',
+  uScreenshake in 'uScreenshake.pas',
+  uScreenshot in 'uScreenshot.pas',
+  uTexture in 'uTexture.pas',
+  uTextureRegion in 'uTextureRegion.pas',
+  uTextureScaled in 'uTextureScaled.pas',
+  uTextureTiled in 'uTextureTiled.pas';
 
 begin
   // Your game execution starts with a call to GVRunGame. You simply pass in
   // your TGVCustomGame or TGVGame derrived class to start the ball rolling.
-  GVRunGame(TTextureRegion);
+  GVRunGame(TGVExamples);
 end.
