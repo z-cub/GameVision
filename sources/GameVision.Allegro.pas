@@ -2925,7 +2925,7 @@ function al_set_shader_float(const name: PUTF8Char; f: Single): Boolean; cdecl;
 function al_set_shader_int_vector(const name: PUTF8Char; num_components: Integer; const i: PInteger; num_elems: Integer): Boolean; cdecl;
   external ALLEGRO_DLL name _PU + 'al_set_shader_int_vector' {$IFDEF MSWINDOWS}delayed{$ENDIF};
 
-function al_set_shader_float_vector(const name: PUTF8Char; num_components: Integer; const f: PSingle; num_elems: Integer): Boolean; cdecl;
+function al_set_shader_float_vector(const name: PUTF8Char; num_components: Integer; const f: System.PSingle; num_elems: Integer): Boolean; cdecl;
   external ALLEGRO_DLL name _PU + 'al_set_shader_float_vector' {$IFDEF MSWINDOWS}delayed{$ENDIF};
 
 function al_set_shader_bool(const name: PUTF8Char; b: Boolean): Boolean; cdecl;
