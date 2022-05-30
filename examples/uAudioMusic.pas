@@ -50,51 +50,104 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 ============================================================================= }
 
-program GVExamples;
+unit uAudioMusic;
 
-{$APPTYPE CONSOLE}
-
-{$R *.res}
+interface
 
 uses
   System.SysUtils,
   GameVision.Game,
-  uGVExamples in 'uGVExamples.pas',
-  uAstroBlaster in 'uAstroBlaster.pas',
-  uRenderTargets in 'uRenderTargets.pas',
-  uCommon in 'uCommon.pas',
-  uAudioPositional in 'uAudioPositional.pas',
-  uEntity in 'uEntity.pas',
-  uEntityPolyPointCollision in 'uEntityPolyPointCollision.pas',
-  uGUI in 'uGUI.pas',
-  uScreenshake in 'uScreenshake.pas',
-  uScreenshot in 'uScreenshot.pas',
-  uTexture in 'uTexture.pas',
-  uTextureRegion in 'uTextureRegion.pas',
-  uTextureScaled in 'uTextureScaled.pas',
-  uTextureTiled in 'uTextureTiled.pas',
-  uElastic in 'uElastic.pas',
-  uScroll in 'uScroll.pas',
-  uChainAction in 'uChainAction.pas',
-  uTextureAlign in 'uTextureAlign.pas',
-  uActor in 'uActor.pas',
-  uEntityBlendMode in 'uEntityBlendMode.pas',
-  uTextureColorkey in 'uTextureColorkey.pas',
-  uAudioMusic in 'uAudioMusic.pas',
-  uTextureTransparent in 'uTextureTransparent.pas',
-  uTextureParallax in 'uTextureParallax.pas',
-  uVideo in 'uVideo.pas',
-  uEnityPolyPointCollisionPoint in 'uEnityPolyPointCollisionPoint.pas',
-  uRenderTargetRotate in 'uRenderTargetRotate.pas',
-  uAudioSound in 'uAudioSound.pas',
-  uSpeech in 'uSpeech.pas',
-  uFontUnicode in 'uFontUnicode.pas',
-  uStarfield in 'uStarfield.pas',
-  uCamera in 'uCamera.pas',
-  uHighscores in 'uHighscores.pas';
+  uCommon;
 
+type
+  { TAudioMusic }
+  TAudioMusic = class(TBaseExample)
+  protected
+    FFilename: string;
+    FNum: Integer;
+    FMusic: Integer;
+    procedure Play(aNum: Integer; aVol: Single);
+  public
+    procedure OnSetSettings(var aSettings: TGVGameSettings); override;
+    procedure OnStartup; override;
+    procedure OnShutdown; override;
+    procedure OnUpdateFrame(aDeltaTime: Double); override;
+    procedure OnRenderFrame; override;
+    procedure OnRenderHUD; override;
+  end;
+
+implementation
+
+uses
+  System.IOUtils,
+  GameVision.Common,
+  GameVision.Color,
+  GameVision.Input,
+  GameVision.Core;
+
+{ TAudioMusic }
+procedure TAudioMusic.Play(aNum: Integer; aVol: Single);
 begin
-  // Your game execution starts with a call to GVRunGame. You simply pass in
-  // your TGVCustomGame or TGVGame derrived class to start the ball rolling.
-  GVRunGame(TGVExamples);
+  FFilename := Format('arc/music/song%.*d.ogg', [2,aNum]);
+  GV.Audio.UnloadMusic(FMusic);
+  FMusic := GV.Audio.LoadMusic(Archive, FFilename);
+  GV.Audio.PlayMusic(FMusic, aVol, True);
+end;
+
+procedure TAudioMusic.OnSetSettings(var aSettings: TGVGameSettings);
+begin
+  inherited;
+  aSettings.WindowTitle := 'GameVision - Music';
+end;
+
+procedure TAudioMusic.OnStartup;
+begin
+  inherited;
+  FNum := 1;
+  FFilename := '';
+  FMusic := -1;
+  Play(1, 1.0);
+end;
+
+procedure TAudioMusic.OnShutdown;
+begin
+  GV.Audio.UnloadMusic(FMusic);
+  inherited;
+end;
+
+procedure TAudioMusic.OnUpdateFrame(aDeltaTime: Double);
+begin
+  inherited;
+
+  if GV.Input.KeyPressed(KEY_PGUP) then
+  begin
+    Inc(FNum);
+    if FNum > 13 then
+      FNum := 1;
+    Play(FNum, 1.0);
+  end
+  else
+  if GV.Input.KeyPressed(KEY_PGDN) then
+  begin
+    Dec(FNum);
+    if FNum < 1 then
+      FNum := 13;
+    Play(FNum, 1.0);
+  end
+end;
+
+procedure TAudioMusic.OnRenderFrame;
+begin
+  inherited;
+end;
+
+procedure TAudioMusic.OnRenderHUD;
+begin
+  inherited;
+
+  HudText(Font, GREEN,  haLeft, HudTextItem('PgUp/PgDn', 'Play sample'), []);
+  HudText(Font, ORANGE, haLeft, HudTextItem('Song:', '%s', ' '), [TPath.GetFileName(FFilename)]);
+
+end;
+
 end.

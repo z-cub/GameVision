@@ -152,13 +152,13 @@ begin
       LFilename := aFilename;
     end;
 
+  Unload;
+
   if aArchive = nil then GV.SetFileSandBoxed(False);
   LHandle := al_open_video(LMarshallar.AsUtf8(LFilename).ToPointer);
   if aArchive = nil then GV.SetFileSandBoxed(True);
 
   if LHandle = nil then Exit;
-
-  Unload;
 
   if al_is_audio_installed then
   begin
@@ -199,6 +199,8 @@ begin
   end;
 
   FHandle := nil;
+  FMixer := nil;
+  FVoice := nil;
   FFilename := '';
   FLoop := False;
   FPlaying := False;

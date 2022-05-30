@@ -50,51 +50,90 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 ============================================================================= }
 
-program GVExamples;
+unit uVideo;
 
-{$APPTYPE CONSOLE}
-
-{$R *.res}
+interface
 
 uses
   System.SysUtils,
   GameVision.Game,
-  uGVExamples in 'uGVExamples.pas',
-  uAstroBlaster in 'uAstroBlaster.pas',
-  uRenderTargets in 'uRenderTargets.pas',
-  uCommon in 'uCommon.pas',
-  uAudioPositional in 'uAudioPositional.pas',
-  uEntity in 'uEntity.pas',
-  uEntityPolyPointCollision in 'uEntityPolyPointCollision.pas',
-  uGUI in 'uGUI.pas',
-  uScreenshake in 'uScreenshake.pas',
-  uScreenshot in 'uScreenshot.pas',
-  uTexture in 'uTexture.pas',
-  uTextureRegion in 'uTextureRegion.pas',
-  uTextureScaled in 'uTextureScaled.pas',
-  uTextureTiled in 'uTextureTiled.pas',
-  uElastic in 'uElastic.pas',
-  uScroll in 'uScroll.pas',
-  uChainAction in 'uChainAction.pas',
-  uTextureAlign in 'uTextureAlign.pas',
-  uActor in 'uActor.pas',
-  uEntityBlendMode in 'uEntityBlendMode.pas',
-  uTextureColorkey in 'uTextureColorkey.pas',
-  uAudioMusic in 'uAudioMusic.pas',
-  uTextureTransparent in 'uTextureTransparent.pas',
-  uTextureParallax in 'uTextureParallax.pas',
-  uVideo in 'uVideo.pas',
-  uEnityPolyPointCollisionPoint in 'uEnityPolyPointCollisionPoint.pas',
-  uRenderTargetRotate in 'uRenderTargetRotate.pas',
-  uAudioSound in 'uAudioSound.pas',
-  uSpeech in 'uSpeech.pas',
-  uFontUnicode in 'uFontUnicode.pas',
-  uStarfield in 'uStarfield.pas',
-  uCamera in 'uCamera.pas',
-  uHighscores in 'uHighscores.pas';
+  uCommon;
 
+type
+  { TVideo }
+  TVideo = class(TBaseExample)
+  protected
+    FFilename: array[0..1] of string;
+    FNum: Integer;
+    procedure Play(aNum: Integer; aVolume: Single);
+  public
+    procedure OnSetSettings(var aSettings: TGVGameSettings); override;
+    procedure OnStartup; override;
+    procedure OnShutdown; override;
+    procedure OnUpdateFrame(aDeltaTime: Double); override;
+    procedure OnRenderFrame; override;
+    procedure OnRenderHUD; override;
+  end;
+
+implementation
+
+uses
+  GameVision.Common,
+  GameVision.Color,
+  GameVision.Math,
+  GameVision.Input,
+  GameVision.Core;
+
+{ TVideo }
+procedure TVideo.Play(aNum: Integer; aVolume: Single);
 begin
-  // Your game execution starts with a call to GVRunGame. You simply pass in
-  // your TGVCustomGame or TGVGame derrived class to start the ball rolling.
-  GVRunGame(TGVExamples);
+  if (aNum < 0) or (aNum > 3) then Exit;
+  if  (aNum = FNum) then Exit;
+  FNum := aNum;
+  GV.Video.Play(Archive, 'arc/videos/'+FFilename[FNum], True, aVolume);
+end;
+procedure TVideo.OnSetSettings(var aSettings: TGVGameSettings);
+begin
+  inherited;
+  aSettings.WindowTitle := 'GameVision - Video';
+end;
+
+procedure TVideo.OnStartup;
+begin
+  inherited;
+  FFilename[0] := 'GameVision.ogv';
+  FFilename[1] := 'tinyBigGAMES.ogv';
+  FNum := -1;
+  Play(0, 1);
+end;
+
+procedure TVideo.OnShutdown;
+begin
+  GV.Video.Unload;
+  inherited;
+end;
+
+procedure TVideo.OnUpdateFrame(aDeltaTime: Double);
+begin
+  inherited;
+
+  if GV.Input.KeyPressed(KEY_1) then
+    Play(0, 0.5);
+
+  if GV.Input.KeyPressed(KEY_2) then
+    Play(1, 0.5);
+end;
+
+procedure TVideo.OnRenderFrame;
+begin
+  inherited;
+  GV.Video.Draw(0, 0, 0.50);
+end;
+
+procedure TVideo.OnRenderHUD;
+begin
+  inherited;
+  HudText(Font, GREEN, haLeft, HudTextItem('1-2', 'Video (%s)'), [FFilename[FNum]]);
+end;
+
 end.

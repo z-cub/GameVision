@@ -68,19 +68,42 @@ type
       // demos
       miAstroBlaster,
       miRenderTargets,
+      miElastic,
+      miScroll,
+      miChainAction,
+
       // texture
       miTexture,
       miTextureRegion,
       miTextureScaled,
+      miTextureAlign,
+      miTextureColorkey,
+      miTextureTransparent,
+      miTextureParrallax,
+
       // audio
       miAudioPositional,
+      miAudioMusic,
+      miAudioSound,
+
       // entity
       miEntity,
       miEntityPolyPointCollision,
+      miEntityBlendMode,
+      miEntityPolyPointCollisionPoint,
+
       // misc
       miScreenshake,
       miScreenshot,
-      miGUI
+      miGUI,
+      miActor,
+      miVideo,
+      miRenderTargetRotate,
+      miSpeech,
+      miFontUnicode,
+      miStarfield,
+      miCamera,
+      miHighscores
     );
   public
     procedure OnStartup; override;
@@ -110,7 +133,26 @@ uses
   uTextureRegion,
   uTextureScaled,
   uTextureTiled,
-  uGUI;
+  uGUI,
+  uElastic,
+  uScroll,
+  uChainAction,
+  uTextureAlign,
+  uActor,
+  uEntityBlendMode,
+  uTextureColorkey,
+  uAudioMusic,
+  uTextureTransparent,
+  uTextureParallax,
+  uVideo,
+  uEnityPolyPointCollisionPoint,
+  uRenderTargetRotate,
+  uAudioSound,
+  uSpeech,
+  uFontUnicode,
+  uStarfield,
+  uCamera,
+  uHighscores;
 
 { TGVExamples }
 procedure TGVExamples.OnStartup;
@@ -180,17 +222,25 @@ begin
 
   LAudioMenu := LMenu.AddItem(0, 'Audio', GV_TREEMENU_NONE, True);
   LMenu.AddItem(LAudioMenu, 'Positional', Ord(miAudioPositional), True);
+  LMenu.AddItem(LAudioMenu, 'Music', Ord(miAudioMusic), True);
+  LMenu.AddItem(LAudioMenu, 'Sound', Ord(miAudioSound), True);
   LMenu.Sort(LAudioMenu);
 
   LTextureMenu := LMenu.AddItem(0, 'Texture', GV_TREEMENU_NONE, True);
   LMenu.AddItem(LTextureMenu, 'Texture', Ord(miTexture), True);
   LMenu.AddItem(LTextureMenu, 'Region', Ord(miTextureRegion), True);
   LMenu.AddItem(LTextureMenu, 'Scaled', Ord(miTextureScaled), True);
+  LMenu.AddItem(LTextureMenu, 'Align', Ord(miTextureAlign), True);
+  LMenu.AddItem(LTextureMenu, 'Colorkey', Ord(miTextureColorkey), True);
+  LMenu.AddItem(LTextureMenu, 'Transparent', Ord(miTextureTransparent), True);
+  LMenu.AddItem(LTextureMenu, 'Parallax', Ord(miTextureParrallax), True);
   LMenu.Sort(LTextureMenu);
 
   LEntity := LMenu.AddItem(0, 'Entity', GV_TREEMENU_NONE, True);
   LMenu.AddItem(LEntity, 'Entity', Ord(miEntity), True);
   LMenu.AddItem(LEntity, 'PolyPoint Collision', Ord(miEntityPolyPointCollision), True);
+  LMenu.AddItem(LEntity, 'Blend Mode', Ord(miEntityBlendMode), True);
+  LMenu.AddItem(LEntity, 'PolyPoint Collision Point', Ord(miEntityPolyPointCollisionPoint), True);
   LMenu.Sort(LEntity);
 
   LMenu.Sort(0);
@@ -199,11 +249,24 @@ begin
   LMenu.AddItem(LMiscMenu, 'Screenshake', Ord(miScreenshake), True);
   LMenu.AddItem(LMiscMenu, 'Screensave', Ord(miScreenshot), True);
   LMenu.AddItem(LMiscMenu, 'GUI', Ord(miGUI), True);
+  LMenu.AddItem(LMiscMenu, 'Actor', Ord(miActor), True);
+  LMenu.AddItem(LMiscMenu, 'Video', Ord(miVideo), True);
+  LMenu.AddItem(LMiscMenu, 'Rotate Render Target', Ord(miRenderTargetRotate), True);
+  LMenu.AddItem(LMiscMenu, 'Speech', Ord(miSpeech), True);
+  LMenu.AddItem(LMiscMenu, 'Starfield', Ord(miStarfield), True);
+  LMenu.AddItem(LMiscMenu, 'Unicode Font', Ord(miFontUnicode), True);
+  LMenu.AddItem(LMiscMenu, 'Highscores', Ord(miHighscores), True);
+  LMenu.AddItem(LMiscMenu, 'Camera', Ord(miCamera), True);
+
   LMenu.Sort(LMiscMenu);
 
   LDemoMenu := LMenu.AddItem(0, 'Demos', GV_TREEMENU_NONE, True);
   LMenu.AddItem(LDemoMenu, 'AstroBlaster', Ord(miAstroBlaster), True);
   LMenu.AddItem(LDemoMenu, 'RenderTargets', Ord(miRenderTargets), True);
+  LMenu.AddItem(LDemoMenu, 'Elastic', Ord(miElastic), True);
+  LMenu.AddItem(LDemoMenu, 'Scroll', Ord(miScroll), True);
+  LMenu.AddItem(LDemoMenu, 'ChainAction', Ord(miChainAction), True);
+
   LMenu.Sort(LDemoMenu);
 
   LConfigFile := TGVConfigFile.Create;
@@ -216,21 +279,44 @@ begin
 
     case TMenuItem(LMenuItem) of
       // demos
-      miAstroBlaster           : GV.Run(TAstroBlaster);
-      miRenderTargets          : GV.Run(TRenderTargets);
+      miAstroBlaster            : GV.Run(TAstroBlaster);
+      miRenderTargets           : GV.Run(TRenderTargets);
+      miElastic                 : GV.Run(TElastic);
+      miScroll                  : GV.Run(TScroll);
+      miChainAction             : GV.Run(TChainAction);
+
       // texture
-      miTexture                : GV.Run(TTexture);
-      miTextureRegion          : GV.Run(TTextureRegion);
-      miTextureScaled          : GV.Run(TTextureScaled);
+      miTexture                 : GV.Run(TTexture);
+      miTextureRegion           : GV.Run(TTextureRegion);
+      miTextureScaled           : GV.Run(TTextureScaled);
+      miTextureAlign            : GV.Run(TTextureAlign);
+      miTextureColorkey         : GV.Run(TTextureColorkey);
+      miTextureTransparent      : GV.Run(TTextureTransparent);
+      miTextureParrallax        : GV.Run(TTextureParallax);
+
       // audio
-      miAudioPositional        : GV.Run(TAudioPositional);
+      miAudioPositional         : GV.Run(TAudioPositional);
+      miAudioMusic              : GV.Run(TAudioMusic);
+      miAudioSound              : GV.Run(TAudioSound);
+
       // entity
-      miEntity                 : GV.Run(TEntity);
+      miEntity                  : GV.Run(TEntity);
       miEntityPolyPointCollision: GV.Run(TEntityPolyPointCollision);
+      miEntityBlendMode         : GV.Run(TEntityBlendMode);
+      miEntityPolyPointCollisionPoint: GV.Run(TEntityPolyPointCollisionPoint);
+
       // misc
-      miScreenshake            : GV.Run(TScreenshake);
-      miScreenshot             : GV.Run(TScreenshot);
-      miGUI                    : GV.Run(TGUI);
+      miScreenshake             : GV.Run(TScreenshake);
+      miScreenshot              : GV.Run(TScreenshot);
+      miGUI                     : GV.Run(TGUI);
+      miActor                   : GV.Run(TActor);
+      miVideo                   : GV.Run(TVideo);
+      miRenderTargetRotate      : GV.Run(TRenderTargetRotate);
+      miSpeech                  : GV.Run(TSpeech);
+      miStarfield               : GV.Run(TStarfield);
+      miFontUnicode             : GV.Run(TFontUnicode);
+      miCamera                  : GV.Run(TCamera);
+      miHighscores              : GV.Run(THighscores);
     end;
   until LMenuItem = GV_TREEMENU_QUIT;
 

@@ -69,7 +69,9 @@ type
     FTexture: TGVTexture;
     FPosition: TGVVector;
     FRegion: TGVRectangle;
+    FCenter: TGVVector;
     FActive: Boolean;
+    FAngle: Single;
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -81,6 +83,8 @@ type
     procedure GetSize(var aSize: TGVRectangle);
     procedure SetRegion(aX: Single; aY: Single; aWidth: Single; aHeight: Single);
     procedure GetRegion(var aRegion: TGVRectangle);
+    procedure SetAngle(aAngle: Single);
+    function  GetAngle: Single;
     procedure Show;
   end;
 
@@ -109,6 +113,8 @@ begin
   FTexture.Allocate(aWidth, aHeight);
   FPosition.Assign(0, 0);
   FRegion.Assign(0, 0, FTexture.Width, FTexture.Height);
+  FAngle := 0;
+  FCenter.Assign(0.5, 0.5);
 end;
 
 function  TGVRenderTarget.GetActive: Boolean;
@@ -165,11 +171,36 @@ begin
   aRegion := FRegion;
 end;
 
+procedure TGVRenderTarget.SetAngle(aAngle: Single);
+begin
+  FAngle := aAngle;
+  if FAngle > 359 then
+    begin
+      while FAngle > 359 do
+      begin
+        FAngle := FAngle - 359;
+      end;
+    end
+  else
+  if FAngle < 0 then
+    begin
+      while FAngle < 0 do
+      begin
+        FAngle := FAngle + 359;
+      end;
+    end;
+end;
+
+function  TGVRenderTarget.GetAngle: Single;
+begin
+  Result := FAngle;
+end;
+
 procedure TGVRenderTarget.Show;
 begin
   if FActive then
     al_set_target_backbuffer(GV.Window.Handle);
-  FTexture.Draw(FPosition.X, FPosition.Y, @FRegion, nil, nil, 0, WHITE);
+  FTexture.Draw(FPosition.X+(FTexture.Width/2), FPosition.Y+(FTexture.Height/2), @FRegion, @FCenter, nil, FAngle, WHITE);
   if FActive then
     al_set_target_bitmap(FTexture.Handle);
 end;

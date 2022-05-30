@@ -50,51 +50,94 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 ============================================================================= }
 
-program GVExamples;
+unit uRenderTargetRotate;
 
-{$APPTYPE CONSOLE}
-
-{$R *.res}
+interface
 
 uses
   System.SysUtils,
+  GameVision.Texture,
+  GameVision.RenderTarget,
   GameVision.Game,
-  uGVExamples in 'uGVExamples.pas',
-  uAstroBlaster in 'uAstroBlaster.pas',
-  uRenderTargets in 'uRenderTargets.pas',
-  uCommon in 'uCommon.pas',
-  uAudioPositional in 'uAudioPositional.pas',
-  uEntity in 'uEntity.pas',
-  uEntityPolyPointCollision in 'uEntityPolyPointCollision.pas',
-  uGUI in 'uGUI.pas',
-  uScreenshake in 'uScreenshake.pas',
-  uScreenshot in 'uScreenshot.pas',
-  uTexture in 'uTexture.pas',
-  uTextureRegion in 'uTextureRegion.pas',
-  uTextureScaled in 'uTextureScaled.pas',
-  uTextureTiled in 'uTextureTiled.pas',
-  uElastic in 'uElastic.pas',
-  uScroll in 'uScroll.pas',
-  uChainAction in 'uChainAction.pas',
-  uTextureAlign in 'uTextureAlign.pas',
-  uActor in 'uActor.pas',
-  uEntityBlendMode in 'uEntityBlendMode.pas',
-  uTextureColorkey in 'uTextureColorkey.pas',
-  uAudioMusic in 'uAudioMusic.pas',
-  uTextureTransparent in 'uTextureTransparent.pas',
-  uTextureParallax in 'uTextureParallax.pas',
-  uVideo in 'uVideo.pas',
-  uEnityPolyPointCollisionPoint in 'uEnityPolyPointCollisionPoint.pas',
-  uRenderTargetRotate in 'uRenderTargetRotate.pas',
-  uAudioSound in 'uAudioSound.pas',
-  uSpeech in 'uSpeech.pas',
-  uFontUnicode in 'uFontUnicode.pas',
-  uStarfield in 'uStarfield.pas',
-  uCamera in 'uCamera.pas',
-  uHighscores in 'uHighscores.pas';
+  uCommon;
 
+type
+  { TRenderTargetRotate }
+  TRenderTargetRotate = class(TBaseExample)
+  protected
+    FRenderTarget: TGVRenderTarget;
+    FBackground: TGVTexture;
+    FSpeed: Single;
+    FAngle: Single;
+  public
+    procedure OnSetSettings(var aSettings: TGVGameSettings); override;
+    procedure OnStartup; override;
+    procedure OnShutdown; override;
+    procedure OnUpdateFrame(aDeltaTime: Double); override;
+    procedure OnRenderFrame; override;
+    procedure OnRenderHUD; override;
+  end;
+
+implementation
+
+uses
+  GameVision.Common,
+  GameVision.Color,
+  GameVision.Math,
+  GameVision.Core;
+
+{ TExampleTemplate }
+procedure TRenderTargetRotate.OnSetSettings(var aSettings: TGVGameSettings);
 begin
-  // Your game execution starts with a call to GVRunGame. You simply pass in
-  // your TGVCustomGame or TGVGame derrived class to start the ball rolling.
-  GVRunGame(TGVExamples);
+  inherited;
+  aSettings.WindowTitle := 'GameVision - RenderTarget Rotate';
+end;
+
+procedure TRenderTargetRotate.OnStartup;
+begin
+  inherited;
+
+  FRenderTarget := TGVRenderTarget.Create;
+  FRenderTarget.Init(380, 280);
+  FRenderTarget.SetPosition((Settings.WindowWidth - 380) div 2, (Settings.WindowHeight - 280) div 2);
+
+  FBackground := TGVTexture.Create;
+  FBackground.Load(Archive, 'arc/images/bluestone.png', nil);
+end;
+
+procedure TRenderTargetRotate.OnShutdown;
+begin
+  FreeAndNil(FBackground);
+  FreeAndNil(FRenderTarget);
+  inherited;
+end;
+
+procedure TRenderTargetRotate.OnUpdateFrame(aDeltaTime: Double);
+begin
+  inherited;
+  FSpeed := FSpeed + (60 * aDeltaTime);
+  FAngle := FAngle + (7 * aDeltaTime);
+  GV.Math.ClipValue(FAngle, 0, 359, True);
+  FRenderTarget.SetAngle(FAngle);
+end;
+
+procedure TRenderTargetRotate.OnRenderFrame;
+var
+  LSize: TGVRectangle;
+begin
+  inherited;
+
+  FRenderTarget.GetSize(LSize);
+  FRenderTarget.SetActive(True);
+  FBackground.DrawTiled(0, FSpeed);
+  Font.PrintTExt(LSize.Width/2, 3, WHITE, haCenter, 'RenderTarget', []);
+  FRenderTarget.SetActive(False);
+  FRenderTarget.Show;
+end;
+
+procedure TRenderTargetRotate.OnRenderHUD;
+begin
+  inherited;
+end;
+
 end.

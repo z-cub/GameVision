@@ -50,51 +50,114 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 ============================================================================= }
 
-program GVExamples;
+unit uTextureParallax;
 
-{$APPTYPE CONSOLE}
-
-{$R *.res}
+interface
 
 uses
   System.SysUtils,
+  GameVision.Math,
+  GameVision.Texture,
   GameVision.Game,
-  uGVExamples in 'uGVExamples.pas',
-  uAstroBlaster in 'uAstroBlaster.pas',
-  uRenderTargets in 'uRenderTargets.pas',
-  uCommon in 'uCommon.pas',
-  uAudioPositional in 'uAudioPositional.pas',
-  uEntity in 'uEntity.pas',
-  uEntityPolyPointCollision in 'uEntityPolyPointCollision.pas',
-  uGUI in 'uGUI.pas',
-  uScreenshake in 'uScreenshake.pas',
-  uScreenshot in 'uScreenshot.pas',
-  uTexture in 'uTexture.pas',
-  uTextureRegion in 'uTextureRegion.pas',
-  uTextureScaled in 'uTextureScaled.pas',
-  uTextureTiled in 'uTextureTiled.pas',
-  uElastic in 'uElastic.pas',
-  uScroll in 'uScroll.pas',
-  uChainAction in 'uChainAction.pas',
-  uTextureAlign in 'uTextureAlign.pas',
-  uActor in 'uActor.pas',
-  uEntityBlendMode in 'uEntityBlendMode.pas',
-  uTextureColorkey in 'uTextureColorkey.pas',
-  uAudioMusic in 'uAudioMusic.pas',
-  uTextureTransparent in 'uTextureTransparent.pas',
-  uTextureParallax in 'uTextureParallax.pas',
-  uVideo in 'uVideo.pas',
-  uEnityPolyPointCollisionPoint in 'uEnityPolyPointCollisionPoint.pas',
-  uRenderTargetRotate in 'uRenderTargetRotate.pas',
-  uAudioSound in 'uAudioSound.pas',
-  uSpeech in 'uSpeech.pas',
-  uFontUnicode in 'uFontUnicode.pas',
-  uStarfield in 'uStarfield.pas',
-  uCamera in 'uCamera.pas',
-  uHighscores in 'uHighscores.pas';
+  uCommon;
 
+type
+  { TParallax }
+  TTextureParallax = class(TBaseExample)
+  protected
+    FTexture: array[0..3] of TGVTexture;
+    FSpeed: array[0..3] of Single;
+    FPos: array[0..3] of TGVVector;
+  public
+    procedure OnSetSettings(var aSettings: TGVGameSettings); override;
+    procedure OnStartup; override;
+    procedure OnShutdown; override;
+    procedure OnUpdateFrame(aDeltaTime: Double); override;
+    procedure OnRenderFrame; override;
+    procedure OnRenderHUD; override;
+  end;
+
+implementation
+
+uses
+  GameVision.Color,
+  GameVision.Window,
+  GameVision.Core;
+
+{ TParallax }
+procedure TTextureParallax.OnSetSettings(var aSettings: TGVGameSettings);
 begin
-  // Your game execution starts with a call to GVRunGame. You simply pass in
-  // your TGVCustomGame or TGVGame derrived class to start the ball rolling.
-  GVRunGame(TGVExamples);
+  inherited;
+  aSettings.WindowTitle := 'GameVision - Parallex Texture';
+end;
+
+procedure TTextureParallax.OnStartup;
+begin
+  inherited;
+
+   FTexture[0] := TGVTexture.Create;
+   FTexture[1] := TGVTexture.Create;
+   FTexture[2] := TGVTexture.Create;
+   FTexture[3] := TGVTexture.Create;
+
+  // Load bitmap images
+  FTexture[0].Load(Archive, 'arc/images/space.png', nil);
+  FTexture[1].Load(Archive, 'arc/images/nebula.png', @BLACK);
+  FTexture[2].Load(Archive, 'arc/images/spacelayer1.png', @BLACK);
+  FTexture[3].Load(Archive, 'arc/images/spacelayer2.png', @BLACK);
+
+  // Set bitmap speeds
+  FSpeed[0] := 0.3 * 30;
+  FSpeed[1] := 0.5 * 30;
+  FSpeed[2] := 1.0 * 30;
+  FSpeed[3] := 2.0 * 30;
+
+  // Clear pos
+  FPos[0].Clear;
+  FPos[1].Clear;
+  FPos[2].Clear;
+  FPos[3].Clear;
+
+end;
+
+procedure TTextureParallax.OnShutdown;
+begin
+  FreeAndNil(FTexture[3]);
+  FreeAndNil(FTexture[2]);
+  FreeAndNil(FTexture[1]);
+  FreeAndNil(FTexture[0]);
+  inherited;
+end;
+
+procedure TTextureParallax.OnUpdateFrame(aDeltaTime: Double);
+var
+  I: Integer;
+begin
+  inherited;
+
+  for I := 0 to 3 do
+    FPos[I].Y := FPos[I].Y + (FSpeed[I] * aDeltaTime);
+end;
+
+procedure TTextureParallax.OnRenderFrame;
+var
+  I: Integer;
+begin
+  inherited;
+
+  for I := 0 to 3 do
+  begin
+    if I = 1 then
+      GV.Window.SetBlendMode(bmAdditiveAlpha);
+    FTexture[I].DrawTiled(FPos[I].X, FPos[I].Y);
+    if I = 1 then
+      GV.Window.RestoreDefaultBlendMode;
+  end;
+end;
+
+procedure TTextureParallax.OnRenderHUD;
+begin
+  inherited;
+end;
+
 end.

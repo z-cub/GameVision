@@ -182,7 +182,7 @@ type
     procedure OnUnloadVideo(const aFilename: string); virtual;
     procedure OnStartVideo(const aFilename: string); virtual;
     procedure OnFinishedVideo(const aFilename: string); virtual;
-    procedure OnSpeechWord(aFWord: string; aText: string); virtual;
+    procedure OnSpeechWord(const aWord: string; const aText: string); virtual;
     procedure OnScreenshot(const aFilename: string); virtual;
     procedure OnBeforeRenderScene(aSceneNum: Integer); virtual;
     procedure OnAfterRenderScene(aSceneNum: Integer); virtual;
@@ -576,7 +576,7 @@ procedure TGVGame.OnFinishedVideo(const aFilename: string);
 begin
 end;
 
-procedure TGVGame.OnSpeechWord(aFWord: string; aText: string);
+procedure TGVGame.OnSpeechWord(const aWord: string; const aText: string);
 begin
 end;
 

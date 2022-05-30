@@ -50,51 +50,107 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 ============================================================================= }
 
-program GVExamples;
+unit uEnityPolyPointCollisionPoint;
 
-{$APPTYPE CONSOLE}
-
-{$R *.res}
+interface
 
 uses
   System.SysUtils,
+  GameVision.Math,
+  GameVision.Entity,
   GameVision.Game,
-  uGVExamples in 'uGVExamples.pas',
-  uAstroBlaster in 'uAstroBlaster.pas',
-  uRenderTargets in 'uRenderTargets.pas',
-  uCommon in 'uCommon.pas',
-  uAudioPositional in 'uAudioPositional.pas',
-  uEntity in 'uEntity.pas',
-  uEntityPolyPointCollision in 'uEntityPolyPointCollision.pas',
-  uGUI in 'uGUI.pas',
-  uScreenshake in 'uScreenshake.pas',
-  uScreenshot in 'uScreenshot.pas',
-  uTexture in 'uTexture.pas',
-  uTextureRegion in 'uTextureRegion.pas',
-  uTextureScaled in 'uTextureScaled.pas',
-  uTextureTiled in 'uTextureTiled.pas',
-  uElastic in 'uElastic.pas',
-  uScroll in 'uScroll.pas',
-  uChainAction in 'uChainAction.pas',
-  uTextureAlign in 'uTextureAlign.pas',
-  uActor in 'uActor.pas',
-  uEntityBlendMode in 'uEntityBlendMode.pas',
-  uTextureColorkey in 'uTextureColorkey.pas',
-  uAudioMusic in 'uAudioMusic.pas',
-  uTextureTransparent in 'uTextureTransparent.pas',
-  uTextureParallax in 'uTextureParallax.pas',
-  uVideo in 'uVideo.pas',
-  uEnityPolyPointCollisionPoint in 'uEnityPolyPointCollisionPoint.pas',
-  uRenderTargetRotate in 'uRenderTargetRotate.pas',
-  uAudioSound in 'uAudioSound.pas',
-  uSpeech in 'uSpeech.pas',
-  uFontUnicode in 'uFontUnicode.pas',
-  uStarfield in 'uStarfield.pas',
-  uCamera in 'uCamera.pas',
-  uHighscores in 'uHighscores.pas';
+  uCommon;
 
+type
+  { TExampleTemplate }
+  TEntityPolyPointCollisionPoint = class(TBaseExample)
+  protected
+    FFigure: TGVEntity;
+    FFigureAngle: Single;
+    FCollide: Boolean;
+    FHitPos: TGVVector;
+  public
+    procedure OnSetSettings(var aSettings: TGVGameSettings); override;
+    procedure OnStartup; override;
+    procedure OnShutdown; override;
+    procedure OnUpdateFrame(aDeltaTime: Double); override;
+    procedure OnRenderFrame; override;
+    procedure OnRenderHUD; override;
+  end;
+
+implementation
+
+uses
+  GameVision.Common,
+  GameVision.Color,
+  GameVision.Core;
+
+{ TExampleTemplate }
+procedure TEntityPolyPointCollisionPoint.OnSetSettings(var aSettings: TGVGameSettings);
 begin
-  // Your game execution starts with a call to GVRunGame. You simply pass in
-  // your TGVCustomGame or TGVGame derrived class to start the ball rolling.
-  GVRunGame(TGVExamples);
+  inherited;
+  aSettings.WindowTitle := 'GameVision - Entity PolyPoint Collision Point';
+end;
+
+procedure TEntityPolyPointCollisionPoint.OnStartup;
+begin
+  inherited;
+
+  // init figure sprite
+  Sprite.LoadPage(Archive, 'arc/images/figure.png', @COLORKEY);
+  Sprite.AddGroup;
+  Sprite.AddImageFromGrid(0, 0, 0, 0, 128, 128);
+
+  // init figure entity
+  FFigure := TGVEntity.Create;
+  FFigure.Init(Sprite, 0);
+  FFigure.SetFrameFPS(17);
+  FFigure.SetScaleAbs(1);
+  FFigure.SetPosAbs(Settings.WindowWidth/2, Settings.WindowHeight/2);
+  FFigure.TracePolyPoint(6, 12, 70);
+  FFigure.SetRenderPolyPoint(True);
+end;
+
+procedure TEntityPolyPointCollisionPoint.OnShutdown;
+begin
+  FreeAndNil(FFigure);
+  inherited;
+end;
+
+procedure TEntityPolyPointCollisionPoint.OnUpdateFrame(aDeltaTime: Double);
+begin
+  inherited;
+
+  FHitPos.Assign(MousePos);
+
+  if FFigure.CollidePolyPointPoint(FHitPos) then
+    FCollide := True
+  else
+    FCollide := False;
+
+  FFigureAngle := FFigureAngle + (30.0 * aDeltaTime);
+  GV.Math.ClipValue(FFigureAngle, 0, 359, True);
+  FFigure.RotateAbs(FFigureAngle);
+end;
+
+procedure TEntityPolyPointCollisionPoint.OnRenderFrame;
+begin
+  inherited;
+
+  FFigure.Render(0, 0);
+  if FCollide then
+  begin
+    var LPos := FFigure.GetPos;
+    Font.PrintText(LPos.X-64, LPos.Y-64, WHITE, haLeft, '(%3f,%3f)', [FHitPos.X, FHitPos.Y]);
+    GV.Primitive.FilledRectangle(FHitPos.X, FHitPos.Y, 10, 10, RED);
+  end;
+end;
+
+procedure TEntityPolyPointCollisionPoint.OnRenderHUD;
+begin
+  inherited;
+  Font.PrintText(Settings.WindowWidth/2, (Settings.WindowHeight/2) - 100, YELLOW, haCenter, 'Move mouse pointer over figure outline', []);
+
+end;
+
 end.

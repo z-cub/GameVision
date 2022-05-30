@@ -57,6 +57,7 @@ unit GameVision.Speech;
 interface
 
 uses
+  System.Generics.Collections,
   System.SysUtils,
   System.Classes,
   GameVision.SpeechLib,
@@ -76,6 +77,7 @@ type
     FText: string;
     FWord: string;
     FVoice: Integer;
+    FSubList: TDictionary<string, string>;
     procedure OnWord(aSender: TObject; aStreamNumber: Integer; aStreamPosition: OleVariant; aCharacterPosition, aLength: Integer);
     //procedure OnStartStream(aSender: TObject; aStreamNumber: Integer; aStreamPosition: OleVariant);
     procedure DoSpeak(aText: string; aFlags: Integer);
@@ -101,6 +103,7 @@ type
     procedure Pause;
     procedure Resume;
     procedure Reset;
+    procedure SubstituteWord(const aWord: string; const aSubstituteWord: string);
   end;
 
 implementation
@@ -110,9 +113,13 @@ uses
 
 {  TGVSpeech }
 procedure TGVSpeech.OnWord(aSender: TObject; aStreamNumber: Integer; aStreamPosition: OleVariant; aCharacterPosition, aLength: Integer);
+var
+  LWord: string;
 begin
   if FText.IsEmpty then Exit;
-  FWord := FText.Substring(aCharacterPosition, aLength);
+  LWord := FText.Substring(aCharacterPosition, aLength);
+  if not FSubList.TryGetValue(LWord, FWord) then
+    FWord := LWord;
   GV.Game.OnSpeechWord(FWord, FText);
 end;
 
@@ -163,15 +170,16 @@ begin
   EnumVoices;
   //FSpVoice.OnStartStream := OnStartStream;
   FSpVoice.OnWord := OnWord;
+  FSubList := TDictionary<string, string>.Create;
   GV.Logger.Log('Initialized %s Subsystem', ['Speech']);
 end;
 
 procedure TGVSpeech.Shutdown;
 begin
+  FreeAndNil(FSubList);
   FreeVoices;
   FSpVoice.OnWord := nil;
   FSpVoice.Free;
-
   GV.Logger.Log('Shutdown %s Subsystem', ['Speech']);
 end;
 
@@ -362,6 +370,19 @@ begin
   EnumVoices;
   //FSpVoice.OnStartStream := OnStartStream;
   FSpVoice.OnWord := OnWord;
+  FSubList.Clear;
+end;
+
+procedure TGVSpeech.SubstituteWord(const aWord: string; const aSubstituteWord: string);
+var
+  LWord: string;
+  LSubstituteWord: string;
+begin
+  LWord := aWord;
+  LSubstituteWord := aSubstituteWord;
+  if LWord.IsEmpty then Exit;
+  if LSubstituteWord.IsEmpty then Exit;
+  FSubList.TryAdd(LWord, LSubstituteWord);
 end;
 
 end.

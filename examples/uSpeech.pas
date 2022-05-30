@@ -50,51 +50,90 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 ============================================================================= }
 
-program GVExamples;
+unit uSpeech;
 
-{$APPTYPE CONSOLE}
-
-{$R *.res}
+interface
 
 uses
   System.SysUtils,
   GameVision.Game,
-  uGVExamples in 'uGVExamples.pas',
-  uAstroBlaster in 'uAstroBlaster.pas',
-  uRenderTargets in 'uRenderTargets.pas',
-  uCommon in 'uCommon.pas',
-  uAudioPositional in 'uAudioPositional.pas',
-  uEntity in 'uEntity.pas',
-  uEntityPolyPointCollision in 'uEntityPolyPointCollision.pas',
-  uGUI in 'uGUI.pas',
-  uScreenshake in 'uScreenshake.pas',
-  uScreenshot in 'uScreenshot.pas',
-  uTexture in 'uTexture.pas',
-  uTextureRegion in 'uTextureRegion.pas',
-  uTextureScaled in 'uTextureScaled.pas',
-  uTextureTiled in 'uTextureTiled.pas',
-  uElastic in 'uElastic.pas',
-  uScroll in 'uScroll.pas',
-  uChainAction in 'uChainAction.pas',
-  uTextureAlign in 'uTextureAlign.pas',
-  uActor in 'uActor.pas',
-  uEntityBlendMode in 'uEntityBlendMode.pas',
-  uTextureColorkey in 'uTextureColorkey.pas',
-  uAudioMusic in 'uAudioMusic.pas',
-  uTextureTransparent in 'uTextureTransparent.pas',
-  uTextureParallax in 'uTextureParallax.pas',
-  uVideo in 'uVideo.pas',
-  uEnityPolyPointCollisionPoint in 'uEnityPolyPointCollisionPoint.pas',
-  uRenderTargetRotate in 'uRenderTargetRotate.pas',
-  uAudioSound in 'uAudioSound.pas',
-  uSpeech in 'uSpeech.pas',
-  uFontUnicode in 'uFontUnicode.pas',
-  uStarfield in 'uStarfield.pas',
-  uCamera in 'uCamera.pas',
-  uHighscores in 'uHighscores.pas';
+  uCommon;
 
+const
+  cSpeak = 'GameVision Toolkit is a 2D indie game library that allows you to do game ' +
+           'development in Delphi, for desktop PCs running Microsoft Windows, ' +
+           'and uses OpenGL for hardware accelerated rendering. ' +
+           'Its robust, designed for easy use, and making all types of 2D games ' +
+           'and other graphic simulations. You access the features from a ' +
+           'simple and intuitive API, to allow you to rapidly and efficiently ' +
+           'develop your projects. There is support for textures, shaders, audio samples, ' +
+           'streaming music, loading resources directly from a compressed enkripted ' +
+           'archive, and much more. GameVision, easy, fast, fun! ';
+
+type
+  { TSpeech }
+  TSpeech = class(TBaseExample)
+  protected
+    FWord: string;
+  public
+    procedure OnSetSettings(var aSettings: TGVGameSettings); override;
+    procedure OnStartup; override;
+    procedure OnShutdown; override;
+    procedure OnUpdateFrame(aDeltaTime: Double); override;
+    procedure OnRenderFrame; override;
+    procedure OnRenderHUD; override;
+    procedure OnSpeechWord(const aWord: string; const aText: string); override;
+  end;
+
+implementation
+
+uses
+  GameVision.Common,
+  GameVision.Color,
+  GameVision.Input,
+  GameVision.Core;
+
+{ TExampleTemplate }
+procedure TSpeech.OnSetSettings(var aSettings: TGVGameSettings);
 begin
-  // Your game execution starts with a call to GVRunGame. You simply pass in
-  // your TGVCustomGame or TGVGame derrived class to start the ball rolling.
-  GVRunGame(TGVExamples);
+  inherited;
+  aSettings.WindowTitle := 'GameVision - Speech';
+  GV.Speech.SubstituteWord('enkripted', 'encrypted');
+end;
+
+procedure TSpeech.OnStartup;
+begin
+  inherited;
+end;
+
+procedure TSpeech.OnShutdown;
+begin
+  inherited;
+end;
+
+procedure TSpeech.OnUpdateFrame(aDeltaTime: Double);
+begin
+  inherited;
+  if GV.Input.KeyPressed(KEY_S) then
+    GV.Speech.Say(cSpeak, True);
+end;
+
+procedure TSpeech.OnRenderFrame;
+begin
+  inherited;
+end;
+
+procedure TSpeech.OnRenderHUD;
+begin
+  inherited;
+  HudText(Font, GREEN,  haLeft, HudTextItem('S', 'Speak'), []);
+  HudText(Font, ORANGE, haLeft, HudTextItem('Speak:', '%s', ' '), [FWord]);
+end;
+
+procedure TSpeech.OnSpeechWord(const aWord: string; const aText: string);
+begin
+  inherited;
+  FWord := aWord;
+end;
+
 end.

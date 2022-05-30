@@ -50,51 +50,88 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 ============================================================================= }
 
-program GVExamples;
+unit uTextureColorkey;
 
-{$APPTYPE CONSOLE}
-
-{$R *.res}
+interface
 
 uses
   System.SysUtils,
+  GameVision.Texture,
   GameVision.Game,
-  uGVExamples in 'uGVExamples.pas',
-  uAstroBlaster in 'uAstroBlaster.pas',
-  uRenderTargets in 'uRenderTargets.pas',
-  uCommon in 'uCommon.pas',
-  uAudioPositional in 'uAudioPositional.pas',
-  uEntity in 'uEntity.pas',
-  uEntityPolyPointCollision in 'uEntityPolyPointCollision.pas',
-  uGUI in 'uGUI.pas',
-  uScreenshake in 'uScreenshake.pas',
-  uScreenshot in 'uScreenshot.pas',
-  uTexture in 'uTexture.pas',
-  uTextureRegion in 'uTextureRegion.pas',
-  uTextureScaled in 'uTextureScaled.pas',
-  uTextureTiled in 'uTextureTiled.pas',
-  uElastic in 'uElastic.pas',
-  uScroll in 'uScroll.pas',
-  uChainAction in 'uChainAction.pas',
-  uTextureAlign in 'uTextureAlign.pas',
-  uActor in 'uActor.pas',
-  uEntityBlendMode in 'uEntityBlendMode.pas',
-  uTextureColorkey in 'uTextureColorkey.pas',
-  uAudioMusic in 'uAudioMusic.pas',
-  uTextureTransparent in 'uTextureTransparent.pas',
-  uTextureParallax in 'uTextureParallax.pas',
-  uVideo in 'uVideo.pas',
-  uEnityPolyPointCollisionPoint in 'uEnityPolyPointCollisionPoint.pas',
-  uRenderTargetRotate in 'uRenderTargetRotate.pas',
-  uAudioSound in 'uAudioSound.pas',
-  uSpeech in 'uSpeech.pas',
-  uFontUnicode in 'uFontUnicode.pas',
-  uStarfield in 'uStarfield.pas',
-  uCamera in 'uCamera.pas',
-  uHighscores in 'uHighscores.pas';
+  uCommon;
 
+type
+  { TTextureColorkey }
+  TTextureColorkey = class(TBaseExample)
+  protected
+    FTexture: array[0..1] of TGVTexture;
+  public
+    procedure OnSetSettings(var aSettings: TGVGameSettings); override;
+    procedure OnStartup; override;
+    procedure OnShutdown; override;
+    procedure OnUpdateFrame(aDeltaTime: Double); override;
+    procedure OnRenderFrame; override;
+    procedure OnRenderHUD; override;
+  end;
+
+implementation
+
+uses
+  GameVision.Common,
+  GameVision.Color,
+  GameVision.Math,
+  GameVision.Core;
+
+{ TTextureColorkey }
+procedure TTextureColorkey.OnSetSettings(var aSettings: TGVGameSettings);
 begin
-  // Your game execution starts with a call to GVRunGame. You simply pass in
-  // your TGVCustomGame or TGVGame derrived class to start the ball rolling.
-  GVRunGame(TGVExamples);
+  inherited;
+  aSettings.WindowTitle := 'GameVision - Texture ColorKey';
+end;
+
+procedure TTextureColorkey.OnStartup;
+begin
+  inherited;
+  FTexture[0] := TGVTexture.Create;
+  FTexture[0].Load(Archive, 'arc/images/circle00.png', nil);
+
+  FTexture[1] := TGVTexture.Create;
+  FTexture[1].Load(Archive, 'arc/images/circle00.png', @COLORKEY);
+end;
+
+procedure TTextureColorkey.OnShutdown;
+begin
+  FreeAndNil(FTexture[1]);
+  FreeAndNil(FTexture[0]);
+  inherited;
+end;
+
+procedure TTextureColorkey.OnUpdateFrame(aDeltaTime: Double);
+begin
+  inherited;
+end;
+
+procedure TTextureColorkey.OnRenderFrame;
+var
+  LCenterPos: TGVVector;
+  LSize: TGVVector;
+begin
+  inherited;
+
+  LCenterPos.Assign(Settings.WindowWidth/2, Settings.WindowHeight/2);
+
+  LSize.Assign(FTexture[0].Width, FTexture[0].Height);
+
+  FTexture[0].Draw(LCenterPos.X, LCenterPos.Y-LSize.Y, 1.0, 0.0, WHITE, haCenter, vaCenter);
+  FTexture[1].Draw(LCenterPos.X, LCenterPos.Y+LSize.Y, 1.0, 0.0, WHITE, haCenter, vaCenter);
+
+  Font.PrintText(LCenterPos.X, LCenterPos.Y-(LSize.Y/2), DARKORANGE, haCenter, 'without colorkey', []);
+  Font.PrintText(LCenterPos.X, LCenterPos.Y+(LSize.Y*1.5), DARKORANGE, haCenter, 'with colorkey', []);
+end;
+
+procedure TTextureColorkey.OnRenderHUD;
+begin
+  inherited;
+end;
+
 end.

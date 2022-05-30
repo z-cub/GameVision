@@ -50,51 +50,96 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 ============================================================================= }
 
-program GVExamples;
+unit uTextureAlign;
 
-{$APPTYPE CONSOLE}
-
-{$R *.res}
+interface
 
 uses
   System.SysUtils,
+  GameVision.Texture,
   GameVision.Game,
-  uGVExamples in 'uGVExamples.pas',
-  uAstroBlaster in 'uAstroBlaster.pas',
-  uRenderTargets in 'uRenderTargets.pas',
-  uCommon in 'uCommon.pas',
-  uAudioPositional in 'uAudioPositional.pas',
-  uEntity in 'uEntity.pas',
-  uEntityPolyPointCollision in 'uEntityPolyPointCollision.pas',
-  uGUI in 'uGUI.pas',
-  uScreenshake in 'uScreenshake.pas',
-  uScreenshot in 'uScreenshot.pas',
-  uTexture in 'uTexture.pas',
-  uTextureRegion in 'uTextureRegion.pas',
-  uTextureScaled in 'uTextureScaled.pas',
-  uTextureTiled in 'uTextureTiled.pas',
-  uElastic in 'uElastic.pas',
-  uScroll in 'uScroll.pas',
-  uChainAction in 'uChainAction.pas',
-  uTextureAlign in 'uTextureAlign.pas',
-  uActor in 'uActor.pas',
-  uEntityBlendMode in 'uEntityBlendMode.pas',
-  uTextureColorkey in 'uTextureColorkey.pas',
-  uAudioMusic in 'uAudioMusic.pas',
-  uTextureTransparent in 'uTextureTransparent.pas',
-  uTextureParallax in 'uTextureParallax.pas',
-  uVideo in 'uVideo.pas',
-  uEnityPolyPointCollisionPoint in 'uEnityPolyPointCollisionPoint.pas',
-  uRenderTargetRotate in 'uRenderTargetRotate.pas',
-  uAudioSound in 'uAudioSound.pas',
-  uSpeech in 'uSpeech.pas',
-  uFontUnicode in 'uFontUnicode.pas',
-  uStarfield in 'uStarfield.pas',
-  uCamera in 'uCamera.pas',
-  uHighscores in 'uHighscores.pas';
+  uCommon;
 
+type
+  { TTextureAlign }
+  TTextureAlign = class(TBaseExample)
+  protected
+    FTexture: TGVTexture;
+  public
+    procedure OnSetSettings(var aSettings: TGVGameSettings); override;
+    procedure OnStartup; override;
+    procedure OnShutdown; override;
+    procedure OnUpdateFrame(aDeltaTime: Double); override;
+    procedure OnRenderFrame; override;
+    procedure OnRenderHUD; override;
+  end;
+
+implementation
+
+uses
+  GameVision.Common,
+  GameVision.Color,
+  GameVision.Math,
+  GameVision.Core;
+
+{ TTextureAlign }
+procedure TTextureAlign.OnSetSettings(var aSettings: TGVGameSettings);
 begin
-  // Your game execution starts with a call to GVRunGame. You simply pass in
-  // your TGVCustomGame or TGVGame derrived class to start the ball rolling.
-  GVRunGame(TGVExamples);
+  inherited;
+  aSettings.WindowTitle := 'GameVision - Texture Align';
+end;
+
+procedure TTextureAlign.OnStartup;
+begin
+  inherited;
+  FTexture := TGVTexture.Create;
+  FTexture.Load(Archive, 'arc/images/square00.png', @COLORKEY);
+end;
+
+procedure TTextureAlign.OnShutdown;
+begin
+  FreeAndNil(FTexture);
+  inherited;
+end;
+
+procedure TTextureAlign.OnUpdateFrame(aDeltaTime: Double);
+begin
+  inherited;
+end;
+
+procedure TTextureAlign.OnRenderFrame;
+var
+  LCenterPos: TGVVector;
+begin
+  inherited;
+
+  LCenterPos.Assign(Settings.WindowWidth/2, Settings.WindowHeight/2);
+
+  GV.Primitive.Line(LCenterPos.X, 0, LCenterPos.X, Settings.WindowHeight, YELLOW, 1);
+  GV.Primitive.Line(0, LCenterPos.Y, Settings.WindowWidth,  LCenterPos.Y, YELLOW, 1);
+
+  FTexture.Draw(LCenterPos.X, LCenterPos.Y, 1, 0, WHITE, haCenter, vaCenter);
+  Font.PrintText(LCenterPos.X, LCenterPos.Y+25, DARKGREEN, haCenter, 'center-center', []);
+
+  GV.Primitive.Line(0, LCenterPos.Y-128, Settings.WindowWidth,  LCenterPos.Y-128, YELLOW, 1);
+
+  FTexture.Draw(LCenterPos.X, LCenterPos.Y-128, 1, 0, WHITE, haLeft, vaTop);
+  Font.PrintText(LCenterPos.X+34, LCenterPos.Y-(128-6), DARKGREEN, haLeft, 'left-top', []);
+
+  FTexture.Draw(LCenterPos.X, LCenterPos.Y-128, 1, 0, WHITE, haLeft, vaBottom);
+  Font.PrintText(LCenterPos.X+34, LCenterPos.Y-(128+25), DARKGREEN, haLeft, 'left-bottom', []);
+
+  GV.Primitive.Line(0, LCenterPos.Y+128, Settings.WindowWidth,  LCenterPos.Y+128, YELLOW, 1);
+  FTexture.Draw(LCenterPos.X, LCenterPos.Y+128, 1, 0, WHITE, haRight, vaTop);
+  Font.PrintText(LCenterPos.X+4, LCenterPos.Y+(128+6), DARKGREEN, haLeft, 'right-top', []);
+
+  FTexture.Draw(LCenterPos.X, LCenterPos.Y+128, 1, 0, WHITE, haRight, vaBottom);
+  Font.PrintText(LCenterPos.X+4, LCenterPos.Y+(128-27), DARKGREEN, haLeft, 'right-bottom', []);
+end;
+
+procedure TTextureAlign.OnRenderHUD;
+begin
+  inherited;
+end;
+
 end.
