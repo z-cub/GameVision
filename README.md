@@ -18,12 +18,12 @@ It's robust, designed for easy use and suitable for making all types of 2D games
 - Written in **Object Pascal**
 - Support Windows 64 bit platform
 - Hardware accelerated with **OpenGL**
-- You interact with GameVision via the global `GV` object and various classes in the toolkit
+- You interact with GameVision via the global `GV` object and the various classes in the toolkit
 - **Archive** (custom archive format, password protection)
-- **Display** (OpenGL, anti-aliasing, vsync, viewports, primitives, blending)
+- **Window** (OpenGL, anti-aliasing, vsync, viewports, primitives, blending)
 - **Input** (keyboard, mouse and joystick)
 - **InputMap** (map an action 'up', 'down' for example to multiple input devices)
-- **Bitmap** (color key transparency, scaling, rotation, flipped, titled,  BMP, DDS, PCX, TGA, JPEG, PNG)
+- **Texture** (color key transparency, scaling, rotation, flipped, titled,  BMP, DDS, PCX, TGA, JPEG, PNG)
 - **Video** (play, pause, rewind, OGV format)
 - **Sprite** (pages, groups, animation, poly-point collision)
 - **Entity** (defined from a sprite, position, scale, rotation, collision)
@@ -32,7 +32,7 @@ It's robust, designed for easy use and suitable for making all types of 2D games
 - **Speech** (multiple voices, play, pause)
 - **Font** (true type, scale, rotate)
 - **Timing** (time-based, frame elapsed, frame speed)
-- **Shaders** (vertex, pixel, GLSL)
+- **Shaders** (vertex, fragment, GLSL)
 - **Misc** (collision, easing, screen shake, screenshot, starfield, colors, INI based config files, startup dialog, treeview menu)
 
 ## Minimum System Requirements
