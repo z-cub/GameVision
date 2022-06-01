@@ -50,52 +50,109 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 ============================================================================= }
 
-program GVExamples;
+unit uShader;
 
-{$APPTYPE CONSOLE}
-
-{$R *.res}
+interface
 
 uses
   System.SysUtils,
+  GameVision.Shader,
   GameVision.Game,
-  uGVExamples in 'uGVExamples.pas',
-  uAstroBlaster in 'uAstroBlaster.pas',
-  uRenderTargets in 'uRenderTargets.pas',
-  uCommon in 'uCommon.pas',
-  uAudioPositional in 'uAudioPositional.pas',
-  uEntity in 'uEntity.pas',
-  uEntityPolyPointCollision in 'uEntityPolyPointCollision.pas',
-  uGUI in 'uGUI.pas',
-  uScreenshake in 'uScreenshake.pas',
-  uScreenshot in 'uScreenshot.pas',
-  uTexture in 'uTexture.pas',
-  uTextureRegion in 'uTextureRegion.pas',
-  uTextureScaled in 'uTextureScaled.pas',
-  uTextureTiled in 'uTextureTiled.pas',
-  uElastic in 'uElastic.pas',
-  uScroll in 'uScroll.pas',
-  uChainAction in 'uChainAction.pas',
-  uTextureAlign in 'uTextureAlign.pas',
-  uActor in 'uActor.pas',
-  uEntityBlendMode in 'uEntityBlendMode.pas',
-  uTextureColorkey in 'uTextureColorkey.pas',
-  uAudioMusic in 'uAudioMusic.pas',
-  uTextureTransparent in 'uTextureTransparent.pas',
-  uTextureParallax in 'uTextureParallax.pas',
-  uVideo in 'uVideo.pas',
-  uEnityPolyPointCollisionPoint in 'uEnityPolyPointCollisionPoint.pas',
-  uRenderTargetRotate in 'uRenderTargetRotate.pas',
-  uAudioSound in 'uAudioSound.pas',
-  uSpeech in 'uSpeech.pas',
-  uFontUnicode in 'uFontUnicode.pas',
-  uStarfield in 'uStarfield.pas',
-  uCamera in 'uCamera.pas',
-  uHighscores in 'uHighscores.pas',
-  uShader in 'uShader.pas';
+  uCommon;
 
+type
+  { TShader }
+  TShader = class(TBaseExample)
+  const
+    CName: array[0..2] of string = ('swirl', 'vortex', 'fire');
+  protected
+    FShader: array[0..2] of TGVShader;
+    FIndex: Integer;
+  public
+    procedure OnSetSettings(var aSettings: TGVGameSettings); override;
+    procedure OnStartup; override;
+    procedure OnShutdown; override;
+    procedure OnUpdateFrame(aDeltaTime: Double); override;
+    procedure OnRenderFrame; override;
+    procedure OnRenderHUD; override;
+  end;
+
+implementation
+
+uses
+  GameVision.Common,
+  GameVision.Color,
+  GameVision.Input,
+  GameVision.Core;
+
+{ TShader }
+procedure TShader.OnSetSettings(var aSettings: TGVGameSettings);
 begin
-  // Your game execution starts with a call to GVRunGame. You simply pass in
-  // your TGVCustomGame or TGVGame derrived class to start the ball rolling.
-  GVRunGame(TGVExamples);
+  inherited;
+  aSettings.WindowTitle := 'GameVision - Shader';
+  aSettings.WindowClearColor := BLACK;
+end;
+
+procedure TShader.OnStartup;
+var
+  I: Integer;
+begin
+  inherited;
+
+  for I := 0 to 2 do
+  begin
+    FShader[I] := TGVShader.Create;
+    FShader[I].Load(Archive, stFragment, Format('arc/shaders/%s.frag', [CName[I]]));
+    FShader[I].Build;
+
+    FShader[I].Enable(True);
+    FShader[I].SetVec2Uniform('u_resolution', GV.Window.Width * GV.Window.Scale, GV.Window.Height * GV.Window.Scale);
+    FShader[I].Enable(False);
+  end;
+
+  FIndex := 0;
+end;
+
+procedure TShader.OnShutdown;
+var
+  I: Integer;
+begin
+  for I := 2 downto 0 do
+    FreeAndNil(FShader[I]);
+  inherited;
+end;
+
+procedure TShader.OnUpdateFrame(aDeltaTime: Double);
+begin
+  inherited;
+
+  if GV.Input.KeyPressed(KEY_1) then
+    FIndex := 0
+  else
+  if GV.Input.KeyPressed(KEY_2) then
+    FIndex := 1
+  else
+  if GV.Input.KeyPressed(KEY_3) then
+    FIndex := 2;
+
+  FShader[FIndex].Enable(True);
+  FShader[FIndex].SetFloatUniform('u_time', GetTime);
+  FShader[FIndex].Enable(False);
+end;
+
+procedure TShader.OnRenderFrame;
+begin
+  inherited;
+
+  FShader[FIndex].Enable(True);
+  GV.Primitive.FilledRectangle(0, 0, GV.Window.Width, GV.Window.Height, WHITE);
+  FShader[FIndex].Enable(False);
+end;
+
+procedure TShader.OnRenderHUD;
+begin
+  inherited;
+  HudText(FFont, GREEN, haLeft, HudTextItem('1-3', 'Shader (%s)'), [CName[FIndex]]);
+end;
+
 end.

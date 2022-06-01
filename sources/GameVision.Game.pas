@@ -229,7 +229,8 @@ uses
   GameVision.Input,
   GameVision.Util,
   GameVision.Console,
-  GameVision.Core;
+  GameVision.Core,
+  GameVision.Logger;
 
 procedure TGVGame.UpdateTiming;
 begin
@@ -763,11 +764,12 @@ begin
 
   FTerminated := False;
   FReady := True;
-  ResetTiming;
 
   GV.Audio.Open;
   GV.GUI.Open;
   GV.CmdConsole.Open;
+  GV.Input.Clear;
+  ResetTiming;
 
   while not FTerminated do
   begin
@@ -916,6 +918,7 @@ begin
   GV.GUI.Close;
   GV.Audio.Close;
   GV.Video.Unload;
+  GV.Input.Clear;
 end;
 
 { GVRunGame }
@@ -928,15 +931,49 @@ var
   // run custom game
   procedure RunCustomGame(aCustomGame: TGVCustomGame);
   begin
+    {$IFDEF DEBUG}
+    aCustomGame.OnProcessCmdLine;
+    aCustomGame.OnStartup;
+    try
+      aCustomGame.OnRun;
+    finally
+      aCustomGame.OnShutdown;
+    end;
+    {$ELSE}
     aCustomGame.OnProcessCmdLine;
     aCustomGame.OnStartup;
     aCustomGame.OnRun;
     aCustomGame.OnShutdown;
+    {$ENDIF}
   end;
 
   // run game
   procedure RunGame(aGame: TGVGame);
   begin
+    {$IFDEF DEBUG}
+    aGame.OnProcessCmdLine;
+    aGame.OnPreStartup;
+    try
+      aGame.OnSetSettings(aGame.FSettings);
+      aGame.OpenArchive;
+      try
+        aGame.OnLoadConfig;
+        try
+          if not aGame.OnStartupDialog then
+            aGame.OnRun
+          else
+          while aGame.ProcessStartupDialog do
+            aGame.OnRun;
+        finally
+          aGame.OnSaveConfig;
+        end;
+      finally
+        aGAme.CloseArchive;
+      end;
+    finally
+      aGame.OnPostStartup;
+    end;
+    {$ELSE}
     aGame.OnProcessCmdLine;
     aGame.OnPreStartup;
     aGame.OnSetSettings(aGame.FSettings);
@@ -950,6 +987,7 @@ var
     aGame.OnSaveConfig;
     aGAme.CloseArchive;
     aGame.OnPostStartup;
+    {$ENDIF}
   end;
 
 begin
@@ -969,6 +1007,37 @@ begin
   // exit if GV is already instantiated
   if GV <> nil then Exit;
 
+  {$IFDEF DEBUG}
+  try
+    // create GV instance
+    GV := TGV.Create;
+    try
+      // create custom game
+      LCustomGame := aGame.Create;
+      try
+        // check if TGVCustome or TGVGame types
+        if LCustomGame is TGVGame then
+          // run TGVGame decendant
+          RunGame(LCustomGame as TGVGame)
+        else
+          // run TGVCustomGame decendant
+          RunCustomGame(LCustomGame);
+      finally
+        // free custom game
+        FreeAndNil(LCustomGame);
+      end;
+      // check if should pause
+      if aPause then GV.Console.Pause;
+    finally
+      // free & display of GV
+      GV.Free;
+      GV := nil;
+    end;
+  except
+    on E: Exception do
+      TGVLogger.Fatal(E.Message, [], True);
+  end;
+  {$ELSE}
   // create GV instance
   GV := TGV.Create;
 
@@ -992,6 +1061,7 @@ begin
   // free & display of GV
   GV.Free;
   GV := nil;
+  {$ENDIF}
 end;
 
 end.

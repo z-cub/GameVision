@@ -59,6 +59,7 @@ interface
 uses
   System.SysUtils,
   GameVision.Allegro,
+  GameVision.Math,
   GameVision.Base,
   GameVision.Archive,
   GameVision.Texture;
@@ -86,6 +87,8 @@ type
     function SetFloatUniform(const aName: string; aNumComponents: Integer; aValue: System.PSingle; aNumElements: Integer): Boolean; overload;
     function SetBoolUniform(const aName: string; aValue: Boolean): Boolean;
     function SetTextureUniform(const aName: string; aTexture: TGVTexture): Boolean;
+    function SetVec2Uniform(const aName: string; aValue: TGVVector): Boolean; overload;
+    function SetVec2Uniform(const aName: string; aX: Single; aY: Single): Boolean; overload;
   end;
 
 implementation
@@ -243,6 +246,24 @@ begin
   if FHandle = nil then Exit;
   if aTexture = nil then Exit;
   Result := al_set_shader_sampler(LMarshaller.AsAnsi(aName).ToPointer, aTexture.Handle, 1);
+end;
+
+function TGVShader.SetVec2Uniform(const aName: string; aValue: TGVVector): Boolean;
+var
+  LVec2: array[0..1] of Single;
+begin
+  LVec2[0] := aValue.X;
+  LVec2[1] := aValue.Y;
+  Result := SetFloatUniform(aName, 2, @LVec2, 1);
+end;
+
+function TGVShader.SetVec2Uniform(const aName: string; aX: Single; aY: Single): Boolean;
+var
+  LVec2: array[0..1] of Single;
+begin
+  LVec2[0] := aX;
+  LVec2[1] := aY;
+  Result := SetFloatUniform(aName, 2, @LVec2, 1);
 end;
 
 end.

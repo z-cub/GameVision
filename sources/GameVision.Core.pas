@@ -369,12 +369,27 @@ procedure TGV.Run(aGame: TGVCustomGameClass);
 var
   LGame: TGVCustomGame;
 begin
+  {$IFDEF DEBUG}
+  LGame := aGame.Create;
+  try
+    LGame.OnProcessCmdLine;
+    LGame.OnStartup;
+    try
+      LGame.OnRun;
+    finally
+      LGame.OnShutdown;
+    end;
+  finally
+    FreeAndNil(LGame);
+  end;
+  {$ELSE}
   LGame := aGame.Create;
   LGame.OnProcessCmdLine;
   LGame.OnStartup;
   LGame.OnRun;
   LGame.OnShutdown;
   FreeAndNil(LGame);
+  {$ENDIF}
 end;
 
 procedure TGV.Run(aGame: TGVGameClass);
@@ -382,6 +397,36 @@ var
   LGame: TGVGame;
   LSettings: TGVGameSettings;
 begin
+  {$IFDEF DEBUG}
+  LGame := aGame.Create;
+  try
+    LGame.OnProcessCmdLine;
+    LGame.OnPreStartup;
+    try
+      LGame.OnSetSettings(LSettings);
+      LGame.Settings := LSettings;
+      LGame.OpenArchive;
+      try
+        LGame.OnLoadConfig;
+        try
+          if not LGame.OnStartupDialog then
+            LGame.OnRun
+          else
+            while LGame.ProcessStartupDialog do
+              LGame.OnRun;
+        finally
+          LGame.OnSaveConfig;
+        end;
+      finally
+        LGame.CloseArchive;
+      end;
+    finally
+      LGame.OnPostStartup;
+    end;
+  finally
+    FreeAndNil(LGame);
+  end;
+  {$ELSE}
   LGame := aGame.Create;
   LGame.OnProcessCmdLine;
   LGame.OnPreStartup;
@@ -398,6 +443,7 @@ begin
   LGame.CloseArchive;
   LGame.OnPostStartup;
   FreeAndNil(LGame);
+  {$ENDIF}
 end;
 
 end.

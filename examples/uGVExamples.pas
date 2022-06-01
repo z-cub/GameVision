@@ -103,7 +103,8 @@ type
       miFontUnicode,
       miStarfield,
       miCamera,
-      miHighscores
+      miHighscores,
+      miShader
     );
   public
     procedure OnStartup; override;
@@ -152,7 +153,8 @@ uses
   uFontUnicode,
   uStarfield,
   uCamera,
-  uHighscores;
+  uHighscores,
+  uShader;
 
 { TGVExamples }
 procedure TGVExamples.OnStartup;
@@ -247,7 +249,7 @@ begin
 
   LMiscMenu := LMenu.AddItem(0, 'Misc', GV_TREEMENU_NONE, True);
   LMenu.AddItem(LMiscMenu, 'Screenshake', Ord(miScreenshake), True);
-  LMenu.AddItem(LMiscMenu, 'Screensave', Ord(miScreenshot), True);
+  LMenu.AddItem(LMiscMenu, 'Screenshot', Ord(miScreenshot), True);
   LMenu.AddItem(LMiscMenu, 'GUI', Ord(miGUI), True);
   LMenu.AddItem(LMiscMenu, 'Actor', Ord(miActor), True);
   LMenu.AddItem(LMiscMenu, 'Video', Ord(miVideo), True);
@@ -257,7 +259,7 @@ begin
   LMenu.AddItem(LMiscMenu, 'Unicode Font', Ord(miFontUnicode), True);
   LMenu.AddItem(LMiscMenu, 'Highscores', Ord(miHighscores), True);
   LMenu.AddItem(LMiscMenu, 'Camera', Ord(miCamera), True);
-
+  LMenu.AddItem(LMiscMenu, 'Shader', Ord(miShader), True);
   LMenu.Sort(LMiscMenu);
 
   LDemoMenu := LMenu.AddItem(0, 'Demos', GV_TREEMENU_NONE, True);
@@ -317,6 +319,7 @@ begin
       miFontUnicode             : GV.Run(TFontUnicode);
       miCamera                  : GV.Run(TCamera);
       miHighscores              : GV.Run(THighscores);
+      miShader                  : GV.Run(TShader);
     end;
   until LMenuItem = GV_TREEMENU_QUIT;
 
