@@ -9,6 +9,13 @@ REM your executable, you can load files from the filesystem also
 REM without having to change your paths throughout your code during
 REM testing.
 
+if exist "..\..\..\..\docs\LICENSE.rtf" (
+    copy "..\..\..\..\docs\LICENSE.rtf" arc\startupdialog\
+)
+if exist "..\..\..\..\docs\README.rtf" (
+    copy "..\..\..\..\docs\README.rtf" arc\startupdialog\
+)
+
 call GVArc ab870994de394389836f316da16add68 Data.zip arc
 echo(
 pause
