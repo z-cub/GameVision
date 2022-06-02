@@ -166,6 +166,10 @@ begin
         // get GV temp path
         LPath := TPath.Combine(TPath.GetTempPath, 'GameVision\');
 
+        // make sure LPath exists
+        TDirectory.CreateDirectory(LPath);
+        if not TDirectory.Exists(LPath) then FatalAbort;
+
         // remove old dll extraction dirs
         LDirs := TDirectory.GetDirectories(LPath);
         for LDir in LDirs do
@@ -180,6 +184,8 @@ begin
 
         // get temp dll extraction path in GV temp path
         LPath := LPath + TPath.GetGUIDFileName.ToLower + '\';
+
+        // make sure LPath exists
         TDirectory.CreateDirectory(LPath);
         if not TDirectory.Exists(LPath) then FatalAbort;
         LZipFile.ExtractAll(LPath);
