@@ -481,14 +481,14 @@ begin
   // free music file
   FreeAndNil(LItem.MusicFile);
 
+  GV.Logger.Log('Unloaded music "%s"', [LItem.Filename]);
+
   // clear item data
   LItem.MusicHandle := nil;
   LItem.Size := 0;
   LItem.Filename := '';
   LItem.MusicFile := nil;
   FMusicList.Items[aMusic] := LItem;
-
-  GV.Logger.Log('Unloaded music "%s"', [LItem.Filename]);
 
   // return handle as invalid
   aMusic := -1;

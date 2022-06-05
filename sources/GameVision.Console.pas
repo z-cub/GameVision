@@ -80,6 +80,9 @@ implementation
 uses
   WinApi.Windows;
 
+function GetConsoleWindow: hWnd; stdcall; external kernel32 name 'GetConsoleWindow';
+
+{ TGVConsole }
 constructor TGVConsole.Create;
 begin
   inherited;

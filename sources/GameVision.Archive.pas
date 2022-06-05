@@ -121,7 +121,6 @@ type
 implementation
 
 uses
-  System.Types,
   System.IOUtils,
   WinApi.Windows,
   GameVision.ZLib,

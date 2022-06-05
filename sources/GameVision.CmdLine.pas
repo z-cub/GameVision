@@ -84,8 +84,8 @@ type
 implementation
 
 uses
-  System.Types,
-  WinApi.Windows;
+  WinApi.Windows,
+  GameVision.Common;
 
 { TGVCmdLine }
 function TGVCmdLine.GetCmdLine: PChar;

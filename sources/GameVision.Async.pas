@@ -135,6 +135,7 @@ end;
 procedure TGVAsync.Process;
 var
   LAsyncThread: TGVAsyncThread;
+  LAsyncThread2: TGVAsyncThread;
   LIndex: TBusyData;
   LBusy: TBusyData;
 begin
@@ -161,7 +162,8 @@ begin
               Break;
             end;
           end;
-          FreeAndNil(LAsyncThread);
+          LAsyncThread2 := LAsyncThread;
+          FreeAndNil(LAsyncThread2);
         end;
       end;
     end;

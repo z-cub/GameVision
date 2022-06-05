@@ -78,22 +78,26 @@ implementation
 {$R GameVision.Deps.res}
 
 uses
-  System.Types,
   System.SysUtils,
   System.Classes,
   System.Zip,
   System.IOUtils,
   WinApi.Windows,
-  GameVision.Util;
+  GameVision.Common,
+  GameVision.Util,
+  GameVision.Core;
 
 const
   cDllResName = 'c34a79db34c34648b0bd0ba42d26df98';
-  cDllNames: array [0..8] of string = (
+  cDllNames: array [0..11] of string = (
     'allegro_monolith-5.2.dll',
     'csfml-audio-2.dll',
+    'csfml-network-2.dll',
     'libcrypto-1_1-x64.dll',
+    'libeay32.dll',
     'libmysql.dll',
     'libssl-1_1-x64.dll',
+    'lua51.dll',
     'Nuklear.dll',
     'openal32.dll',
     'ssleay32.dll',
@@ -150,7 +154,6 @@ var
   LDirs: TStringDynArray;
   LDir: string;
 begin
-
   // check if dlls resource exist
   if not TGVUtil.ResourceExists(HInstance, cDLLResName) then FatalAbort;
 
@@ -205,6 +208,8 @@ begin
   finally
     FreeAndNil(LResStream);
   end;
+
+  GV.Logger.Log('Initialized dependencies', []);
 end;
 
 end.

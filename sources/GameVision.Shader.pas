@@ -108,7 +108,9 @@ end;
 
 destructor TGVShader.Destroy;
 begin
+  Clear;
   if FHandle <> nil then al_destroy_shader(FHandle);
+  FHandle := nil;
   inherited;
 end;
 
@@ -135,6 +137,10 @@ begin
   if aSource.IsEmpty then Exit;
   al_attach_shader_source(FHandle, Ord(aType), nil);
   Result := al_attach_shader_source(FHandle, Ord(aType), LMarshaller.AsUtf8(aSource).ToPointer);
+  if Result then
+    GV.Logger.Log('Sucessfully attached shader source', [])
+  else
+    GV.Logger.Log('Failed to attached shader source', []);
 end;
 
 function TGVShader.Load(aArchive: TGVArchive; aType: TGVShaderType; const aFilename: string): Boolean;
@@ -150,16 +156,25 @@ begin
       if not aArchive.IsOpen then Exit;
       if not aArchive.FileExist(aFilename) then Exit;
       al_attach_shader_source(FHandle, Ord(aType), nil);
-      if not al_attach_shader_source_file(FHandle, Ord(aType), aArchive.GetPasswordFilename(aFilename)) then Exit;
+      if not al_attach_shader_source_file(FHandle, Ord(aType), aArchive.GetPasswordFilename(aFilename)) then
+      begin
+        GV.Logger.Log('Failed to attached shader file: %s', [aFilename]);
+        Exit;
+      end;
     end
   else
     begin   //ALLEGRO_PIXEL_SHADER
       if not TFile.Exists(aFilename) then Exit;
       if aArchive = nil then GV.SetFileSandBoxed(False);
-      if not al_attach_shader_source_file(FHandle, Ord(aType), LMarshaller.AsUtf8(aFilename).ToPointer) then Exit;
+      if not al_attach_shader_source_file(FHandle, Ord(aType), LMarshaller.AsUtf8(aFilename).ToPointer) then
+      begin
+        GV.Logger.Log('Failed to attached shader file: %s', [aFilename]);
+        Exit;
+      end;
       if aArchive = nil then GV.SetFileSandBoxed(True);
     end;
 
+  GV.Logger.Log('Sucessfully attached shader file: "%s"', [aFilename]);
   Result := True;
 end;
 

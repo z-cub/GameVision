@@ -57,10 +57,11 @@ unit GameVision.Lua;
 interface
 
 uses
-  System.Types,
+  System.Generics.Defaults,
   System.SysUtils,
   System.Classes,
   System.Rtti,
+  GameVision.Common,
   GameVision.Archive;
 
 type
@@ -163,7 +164,7 @@ type
   EGVLuaSyntaxError = class(Exception);
 
   { TGVLuaContext }
-  TGVLuaContext = class(TNoRefCountObject, IGVLuaContext)
+  TGVLuaContext = class(TSingletonImplementation, IGVLuaContext)
   protected
     FLua: TGVLua;
     FPushCount: Integer;
@@ -193,7 +194,7 @@ type
   end;
 
   { TGVLua }
-  TGVLua = class(TNoRefCountObject, IGVLua)
+  TGVLua = class(TSingletonImplementation, IGVLua)
   protected
     FState: Pointer;
     FContext: TGVLuaContext;
@@ -269,7 +270,6 @@ uses
   System.TypInfo,
   WinApi.Windows,
   System.Math,
-  GameVision.Common,
   GameVision.Buffer,
   GameVision.LuaJIT,
   GameVision.Core;

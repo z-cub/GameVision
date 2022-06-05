@@ -59,8 +59,8 @@ interface
 const
   // GameVision Constants
   GV_VERSION_MAJOR = '0';
-  GV_VERSION_MINOR = '1';
-  GV_VERSION_PATCH = '1';
+  GV_VERSION_MINOR = '2';
+  GV_VERSION_PATCH = '0';
   GV_VERSION       = GV_VERSION_MAJOR + '.' + GV_VERSION_MINOR + '.' + GV_VERSION_PATCH;
 
   // File Extentions Constatns
@@ -90,6 +90,9 @@ const
   GV_EPSILON = 0.00001;
 
 type
+
+  { TStringDynArray }
+  TStringDynArray = System.TArray<System.string>;
 
   { TGVPrintEvent }
   TGVPrintEvent = procedure(const aMsg: string; const aArgs: array of const) of object;

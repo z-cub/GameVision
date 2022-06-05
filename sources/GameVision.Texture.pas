@@ -137,6 +137,7 @@ begin
   FWidth := al_get_bitmap_width(FHandle);
   FHeight := al_get_bitmap_height(FHandle);
   FFilename := '';
+  GV.Logger.Log('Sucessfully allocated texture (%d:%d)', [Round(FWidth), Round(FHeight)]);
   Result := True;
 end;
 
@@ -162,10 +163,14 @@ begin
       LFilename := aFilename;
     end;
 
-   if aArchive = nil then GV.SetFileSandBoxed(False);
-   LHandle := al_load_bitmap(LMarshaller.AsUtf8(LFilename).ToPointer);
-   if aArchive = nil then GV.SetFileSandBoxed(True);
-   if LHandle = nil then Exit;
+  if aArchive = nil then GV.SetFileSandBoxed(False);
+  LHandle := al_load_bitmap(LMarshaller.AsUtf8(LFilename).ToPointer);
+  if aArchive = nil then GV.SetFileSandBoxed(True);
+  if LHandle = nil then
+  begin
+    GV.Logger.Log('Failed to load texture file: %s', [aFilename]);
+    Exit;
+  end;
 
   Unload;
   FHandle := LHandle;
@@ -176,6 +181,8 @@ begin
   if aColorKey <> nil then
     al_convert_mask_to_alpha(FHandle, LColorKey^);
 
+  GV.Logger.Log('Sucessfully loaded texture file: "%s"', [aFilename]);
+
   Result := True;
 end;
 
@@ -184,6 +191,10 @@ begin
   Result := False;
   if FHandle = nil then Exit;
   al_destroy_bitmap(FHandle);
+  if FFilename.IsEmpty then
+    GV.Logger.Log('Unloaded allocated texture (%d:%d)', [Round(FWidth), Round(FHeight)])
+  else
+    GV.Logger.Log('Unloaded texture file: "%s"', [FFilename]);
   FHandle := nil;
   FWidth := 0;
   FHeight := 0;

@@ -69,8 +69,10 @@ type
     FText: Text;
     FBuffer: array[Word] of Byte;
     FOpen: Boolean;
+    FGlobalWriteToConsole: Boolean;
   public
     property Filename: string read FFilename;
+    property GlobalWriteToConsole: Boolean read FGlobalWriteToConsole write FGlobalWriteToConsole;
     constructor Create; override;
     destructor Destroy; override;
     procedure Open(const aFilename: string=''; aOverwrite: Boolean=True);
@@ -97,6 +99,7 @@ begin
   FFilename := '';
   FillChar(FBuffer, SizeOf(FBuffer), 0);
   FOpen := False;
+  FGlobalWriteToConsole := True;
   Open;
 end;
 
@@ -154,11 +157,19 @@ begin
   LLine := Format(aMsg, aArgs);
 
   // write to console
-  if aWriteToConsole then
-  begin
-    if TGVConsole.IsPresent then
-      WriteLn(LLine);
-  end;
+  if FGlobalWriteToConsole then
+    begin
+      if TGVConsole.IsPresent then
+        WriteLn(LLine);
+    end
+  else
+    begin
+      if aWriteToConsole then
+      begin
+        if TGVConsole.IsPresent then
+          WriteLn(LLine);
+      end;
+    end;
 
   // write to logfile
   {$I-}

@@ -132,20 +132,6 @@ begin
   Result := True;
 end;
 
-(*
-function TGVFont.LoadDefault(aSize: Cardinal): Boolean;
-var
-  LFilename: string;
-begin
-  Result := False;
-  if aSize = 0 then Exit;
-  LFilename := TPath.Combine(TPath.GetDirectoryName(ParamStr(0)), 'default.ttf');
-  if not TFile.Exists(LFilename) then Exit;
-
-  Result := Load(nil, aSize, LFilename);
-end;
-*)
-
 function TGVFont.LoadDefault(aSize: Cardinal): Boolean;
 var
   LStream: TResourceStream;
@@ -192,12 +178,20 @@ begin
   if aArchive <> nil then
     begin
       if not aArchive.IsOpen then Exit;
-      if not aArchive.FileExist(aFilename) then Exit;
+      if not aArchive.FileExist(aFilename) then
+      begin
+        GV.Logger.Log('Failed to load font file: %s', [aFilename]);
+        Exit;
+      end;
       LFilename := string(aArchive.GetPasswordFilename(aFilename));
     end
   else
     begin
-      if not TFile.Exists(aFilename) then Exit;
+      if not TFile.Exists(aFilename) then
+      begin
+        GV.Logger.Log('Failed to load font file: %s', [aFilename]);
+        Exit;
+      end;
       LFilename := aFilename;
     end;
 
@@ -205,9 +199,14 @@ begin
   if aArchive = nil then GV.SetFileSandBoxed(False);
   LHandle := al_load_ttf_font(LMarshaller.AsUtf8(LFilename).ToPointer, -aSize, 0);
   if aArchive = nil then GV.SetFileSandBoxed(True);
-  if LHandle = nil then Exit;
+  if LHandle = nil then
+  begin
+    Exit;
+    GV.Logger.Log('Failed to load font file: %s', [aFilename]);
+  end;
 
   Unload;
+  GV.Logger.Log('Sucessfully loaded texture file: "%s"', [aFilename]);
   FHandle := LHandle;
   FFilename := aFilename;
   FSize := aSize;
@@ -218,6 +217,8 @@ begin
   Result := False;
   if FHandle = nil then Exit;
   al_destroy_font(FHandle);
+  if not FFilename.IsEmpty then
+    GV.Logger.Log('Unloaded font file: "%s"', [FFilename]);
   FHandle := nil;
   FFilename := '';
   FSize := 0;

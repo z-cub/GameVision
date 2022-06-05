@@ -123,11 +123,13 @@ end;
 constructor TGVVideo.Create;
 begin
   inherited;
+  GV.Logger.Log('Initialized %s Subsystem', ['Video']);
 end;
 
 destructor TGVVideo.Destroy;
 begin
   Unload;
+  GV.Logger.Log('Shutdown %s Subsystem', ['Video']);
   inherited;
 end;
 
@@ -143,12 +145,20 @@ begin
   if aArchive <> nil then
     begin
       if not aArchive.IsOpen then Exit;
-      if not aArchive.FileExist(aFilename) then Exit;
+      if not aArchive.FileExist(aFilename) then
+      begin
+        GV.Logger.Log('Failed to load video file: %s', [aFilename]);
+        Exit;
+      end;
       LFilename := string(aArchive.GetPasswordFilename(aFilename));
     end
   else
     begin
-      if not TFile.Exists(aFilename) then Exit;
+      if not TFile.Exists(aFilename) then
+      begin
+        GV.Logger.Log('Failed to load video file: %s', [aFilename]);
+        Exit;
+      end;
       LFilename := aFilename;
     end;
 
@@ -179,6 +189,7 @@ begin
   FPlaying := False;
   FPaused := False;
   GV.Game.OnLoadVideo(FFilename);
+   GV.Logger.Log('Sucessfully loaded video: "%s"', [aFilename]);
   Result := True;
 end;
 
@@ -198,6 +209,8 @@ begin
     al_destroy_voice(FVoice);
   end;
 
+  GV.Logger.Log('Unloaded video "%s"', [FFilename]);
+
   FHandle := nil;
   FMixer := nil;
   FVoice := nil;
@@ -205,6 +218,7 @@ begin
   FLoop := False;
   FPlaying := False;
   FPaused := False;
+
 end;
 
 function  TGVVideo.GetPause: Boolean;

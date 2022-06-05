@@ -166,6 +166,7 @@ implementation
 
 uses
   WinApi.Windows,
+  GameVision.Common,
   GameVision.Deps;
 
 { TGV }
@@ -175,27 +176,55 @@ begin
 end;
 
 procedure TGV.StartupAllegro;
+var
+  LOk: Boolean;
 begin
   if al_is_system_installed then Exit;
 
   // init allegro
-  al_install_system(ALLEGRO_VERSION_INT, nil);
+  LOk := al_install_system(ALLEGRO_VERSION_INT, nil);
+  if LOk then FLogger.Log('Initialized Allegro v%s', [ALLEGRO_VERSION_STR]) else FLogger.Log('Failed to initialize Allegro', []);
 
   // init devices
-  al_install_joystick;
-  al_install_keyboard;
-  al_install_mouse;
-  al_install_touch_input;
-  al_install_audio;
+  LOk := al_install_joystick;
+  if LOk then FLogger.Log('Initialized Allegro joystick support', []) else FLogger.Log('Failed to initialize Allegro joystick support', []);
+
+  LOk := al_install_keyboard;
+  if LOk then FLogger.Log('Initialized Allegro keyboard support', []) else FLogger.Log('Failed to initialize Allegro keyboard', []);
+
+  LOk := al_install_mouse;
+  if LOk then FLogger.Log('Initialized Allegro mouse support', []) else FLogger.Log('Failed to initialize Allegro mouse support', []);
+
+  LOk := al_install_touch_input;
+  if LOk then FLogger.Log('Initialized Allegro touch input', []) else FLogger.Log('Failed to initialize Allegro touch input support', []);
+
+  LOk := al_install_audio;
+  if LOk then FLogger.Log('Initialized Allegro audio support', []) else FLogger.Log('Failed to initialize Allegro audio support', []);
+
+  //if LOk then FLogger.Log('Successfully initialized xxx', []) else FLogger.Log('Failed to initialize xxx', []);
+
 
   // init addons
-  al_init_acodec_addon;
-  al_init_font_addon;
-  al_init_image_addon;
-  al_init_native_dialog_addon;
-  al_init_primitives_addon;
-  al_init_ttf_addon;
-  al_init_video_addon;
+  LOk := al_init_acodec_addon;
+  if LOk then FLogger.Log('Initialized Allegro audio codecs', []) else FLogger.Log('Failed to initialize Allegro audio codecs', []);
+
+  LOk := al_init_font_addon;
+  if LOk then FLogger.Log('Initialized Allegro font support', []) else FLogger.Log('Failed to initialize Allegro font support', []);
+
+  LOk := al_init_image_addon;
+  if LOk then FLogger.Log('Initialized Allegro image support', []) else FLogger.Log('Failed to initialize Allegro image support', []);
+
+  LOk := al_init_native_dialog_addon;
+  if LOk then FLogger.Log('Initialized Allegro native dialog support', []) else FLogger.Log('Failed to initialize Allegro native dialog support', []);
+
+  LOk := al_init_primitives_addon;
+  if LOk then FLogger.Log('Initialized Allegro primitives', []) else FLogger.Log('Failed to initialize Allegro primitives', []);
+
+  LOk := al_init_ttf_addon;
+  if LOk then FLogger.Log('Initialized Allegro ttf support', []) else FLogger.Log('Failed to initialize Allegro ttf support', []);
+
+  LOk := al_init_video_addon;
+  if LOk then FLogger.Log('Initialized Allegro video support', []) else FLogger.Log('Failed to initialize Allegro video support', []);
 
   // int user event source
   al_init_user_event_source(@FUserEventSrc);
@@ -208,6 +237,7 @@ begin
   al_register_event_source(FQueue, al_get_touch_input_event_source);
   al_register_event_source(FQueue, al_get_touch_input_mouse_emulation_event_source);
   al_register_event_source(Queue , @FUserEventSrc);
+  FLogger.Log('Initialized Allegro event queues', []);
 
   FCmdConActive.type_ := EVENT_CMDCON_ACTIVE;
   FCmdConInactive.type_ := EVENT_CMDCON_INACTIVE;
@@ -220,22 +250,27 @@ begin
     al_set_default_mixer(FMixer);
     al_attach_mixer_to_voice(FMixer, FVoice);
     al_reserve_samples(ALLEGRO_MAX_CHANNELS);
+    FLogger.Log('Successfully setup Allegro audio', []);
   end;
 
   // init physfs
   al_store_state(@FFileState[False], ALLEGRO_STATE_NEW_FILE_INTERFACE);
-  PHYSFS_init(nil);
+  LOK := Boolean(PHYSFS_init(nil) <> 0);
+  if LOk then FLogger.Log('Successfully initialized Allegro PHYSFS support', []) else FLogger.Log('Failed to initialize Allegro PHYSFS support', []);
   al_set_physfs_file_interface;
   al_store_state(@FFileState[True], ALLEGRO_STATE_NEW_FILE_INTERFACE);
 end;
 
 procedure TGV.ShutdownAllegro;
+var
+  LOk: Boolean;
 begin
   if not al_is_system_installed then Exit;
 
   // shutdown physfs
   al_set_standard_file_interface;
-  PHYSFS_deinit;
+  LOk := Boolean(PHYSFS_deinit <> 0);
+  if LOk then FLogger.Log('Shutdown Allegro PHYSFS support', []) else FLogger.Log('Failed to shutdown Allegro PHYSFS support', []);
 
   // shutdown audio
   if al_is_audio_installed then
@@ -245,6 +280,7 @@ begin
     al_destroy_mixer(FMixer);
     al_destroy_voice(FVoice);
     al_uninstall_audio;
+    if LOk then FLogger.Log('Shutdown Allegro audio support', []) else FLogger.Log('Failed to shutdown Allegro audio support', []);
   end;
 
   // shutdown event queues
@@ -262,36 +298,48 @@ begin
 
   if al_is_event_source_registered(FQueue, al_get_joystick_event_source) then
     al_unregister_event_source(FQueue, al_get_joystick_event_source);
+  FLogger.Log('Shutdown Allegro event queues', []);
 
   // shutdown devices
   if al_is_touch_input_installed then
+  begin
     al_uninstall_touch_input;
+  end;
 
   if al_is_mouse_installed then
+  begin
     al_uninstall_mouse;
+  end;
 
   if al_is_keyboard_installed then
+  begin
     al_uninstall_keyboard;
+  end;
 
   if al_is_joystick_installed then
+  begin
     al_uninstall_joystick;
+  end;
 
   if al_is_system_installed then
+  begin
     al_uninstall_system;
+  end;
 end;
 
 constructor TGV.Create;
 begin
   inherited;
+  FLogger := TGVLogger.Create;
+  FMasterObjectList := TGVObjectList.Create;
   GV := Self;
+  FLogger.Log('Starting up GameVision Toolkit v%s', [GV_VERSION]);
   TGVDeps.Load;
   FCodePage := GetConsoleOutputCP;
   SetConsoleOutputCP(WinApi.Windows.CP_UTF8);
   StartupAllegro;
-  FMasterObjectList := TGVObjectList.Create;
   FMath := TGVMath.Create;
   FConsole := TGVConsole.Create;
-  FLogger := TGVLogger.Create;
   FCmdLine := TGVCmdLine.Create;
   FWindow := TGVWindow.Create;
   FPrimitive := TGVPrimitive.Create;
@@ -323,12 +371,14 @@ begin
   FreeAndNil(FPrimitive);
   FreeAndNil(FWindow);
   FreeAndNil(FCmdLine);
-  FreeAndNil(FLogger);
   FreeAndNil(FConsole);
   FreeAndNil(FMath);
   FreeAndNil(FLua);
-  FreeAndNil(FMasterObjectList);
+  FMasterObjectList.Clean;
   ShutdownAllegro;
+  FLogger.Log('Shutdown GameVision Toolkit', []);
+  FreeAndNil(FMasterObjectList);
+  FreeAndNil(FLogger);
   GV := nil;
   inherited;
 end;
