@@ -39,6 +39,7 @@ It's robust, designed for easy use and suitable for making all types of 2D games
 - <a href="https://www.embarcadero.com/products/delphi/starter" target="_blank">Delphi Community Edition</a>
 - Microsoft Windows 10, 64 bits
 - OpenGL 3
+- Remote database support uses <a href="https://www.embarcadero.com/products/rad-studio/firedac" target="_blank">FireDAC</a>, thus requires your Delphi edition to support FireDAC with remote connectivity.
 
 ## How to use in Delphi
 - Unzip the archive to a desired location.
